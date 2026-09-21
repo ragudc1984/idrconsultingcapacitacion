@@ -40,16 +40,16 @@
 
 ## 5. Documentar el flujo
 
-- [ ] 5.1 Reescribir el `README.md` sustituyendo la plantilla de Vite por: qué es el repositorio, la dirección pública de la aplicación al inicio (se completa en la tarea 6.4), la puesta en marcha desde cero, la puerta de verificación y el flujo de rama y pull request, conservando la nota sobre las reglas type-aware de oxlint
-- [ ] 5.2 Documentar en el `README.md`, junto al script `verify`, que sus pasos deben actualizarse en el mismo cambio que modifique el workflow de GitHub, y que `act` es la opción de mayor fidelidad para quien quiera ejecutar los workflows reales localmente
-- [ ] 5.3 Dejar escrito en el `README.md` que el repositorio y la aplicación publicada son públicos y que no deben cargarse datos reales
-- [ ] 5.4 Verificar la documentación de puesta en marcha siguiéndola desde cero en un clon limpio del repositorio, en otra carpeta, confirmando que no hace falta ningún conocimiento que no esté escrito
+- [x] 5.1 Reescribir el `README.md` sustituyendo la plantilla de Vite por: qué es el repositorio, la dirección pública de la aplicación al inicio (se completa en la tarea 6.4), la puesta en marcha desde cero, la puerta de verificación y el flujo de rama y pull request, conservando la nota sobre las reglas type-aware de oxlint
+- [x] 5.2 Documentar en el `README.md`, junto al script `verify`, que sus pasos deben actualizarse en el mismo cambio que modifique el workflow de GitHub, y que `act` es la opción de mayor fidelidad para quien quiera ejecutar los workflows reales localmente
+- [x] 5.3 Dejar escrito en el `README.md` que el repositorio y la aplicación publicada son públicos y que no deben cargarse datos reales
+- [x] 5.4 Verificar la documentación de puesta en marcha siguiéndola desde cero en un clon limpio del repositorio, en otra carpeta, confirmando que no hace falta ningún conocimiento que no esté escrito
 - [ ] 5.5 Integrar los cambios de las secciones 4 y 5 por pull request contra `main` —el primer cambio que recorre el flujo completo es el flujo mismo— y verificar que el pull request se puede abrir e integrar
 
 ## 6. Publicación
 
 - [ ] 6.1 **[manual]** Habilitar GitHub Pages en el repositorio con origen en GitHub Actions, y verificar que la configuración queda activa
-- [ ] 6.2 Configurar la ruta base del sitio para que los assets carguen bajo `/<repo>/` y no en la raíz (con la base por defecto, GitHub Pages devuelve 404 en todos los assets y la página queda en blanco sin error visible), y verificar localmente con `npm run preview` que los assets cargan bajo esa ruta
+- [x] 6.2 Configurar la ruta base del sitio para que los assets carguen bajo `/<repo>/` y no en la raíz (con la base por defecto, GitHub Pages devuelve 404 en todos los assets y la página queda en blanco sin error visible), y verificar localmente con `npm run preview` que los assets cargan bajo esa ruta
 - [ ] 6.3 **[manual]** Publicar la aplicación y verificar abriendo `https://ragudc1984.github.io/<repo>/` desde otro dispositivo, sin el proyecto instalado, que la lista de tareas carga y es usable
 - [ ] 6.4 Escribir la dirección pública definitiva al inicio del `README.md` y verificar que el enlace abre la aplicación
 - [ ] 6.5 Verificar que lo publicado refleja la rama principal: integrar un cambio visible en `main`, esperar la publicación, y confirmar que la dirección pública lo muestra
