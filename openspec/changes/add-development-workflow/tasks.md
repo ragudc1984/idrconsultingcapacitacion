@@ -20,36 +20,42 @@
 
 ## 2. Commit inicial y rama principal
 
-- [ ] 2.1 Crear el commit inicial con todo el trabajo existente y un mensaje en español que describa qué contiene el repositorio, y verificar con `git log --stat` que incluye la aplicación, `openspec/specs/`, `openspec/changes/archive/` y los tres documentos de autoridad (`PRODUCT.md`, `DESIGN.md`, `CLAUDE.md`)
-- [ ] 2.2 Renombrar la rama `master` a `main` y verificar con `git branch` que es la única rama y que apunta al commit inicial
-- [ ] 2.3 Verificar con `git status` que el árbol de trabajo queda limpio, sin archivos modificados ni sin seguimiento pendientes
+- [x] 2.1 Crear el commit inicial con todo el trabajo existente y un mensaje en español que describa qué contiene el repositorio, y verificar con `git log --stat` que incluye la aplicación, `openspec/specs/`, `openspec/changes/archive/` y los tres documentos de autoridad (`PRODUCT.md`, `DESIGN.md`, `CLAUDE.md`)
+- [x] 2.2 Renombrar la rama `master` a `main` y verificar con `git branch` que es la única rama y que apunta al commit inicial
+- [x] 2.3 Verificar con `git status` que el árbol de trabajo queda limpio, sin archivos modificados ni sin seguimiento pendientes
 
 ## 3. Repositorio remoto
 
-- [ ] 3.1 **[manual]** Entrar a `https://github.com/` con la cuenta `ragudc1984`, crear un repositorio **vacío** (sin README, sin `.gitignore` y sin licencia — cualquier archivo inicial obliga a un merge de historias no relacionadas en el primer push), y anotar su nombre porque determina la ruta pública de GitHub Pages
-- [ ] 3.2 Configurar el remoto `origin` apuntando a ese repositorio y verificar con `git remote -v` que la dirección es la correcta
-- [ ] 3.3 Empujar `main` al remoto estableciendo el seguimiento, y verificar en la web de GitHub que el repositorio muestra el commit inicial con los 101 archivos y que `main` es la rama predeterminada
-- [ ] 3.4 Verificar que el repositorio remoto no contiene `node_modules/`, `dist/` ni ningún archivo de entorno, inspeccionando el árbol de archivos en la web
+- [x] 3.1 **[manual]** Entrar a `https://github.com/` con la cuenta `ragudc1984`, crear un repositorio **vacío** (sin README, sin `.gitignore` y sin licencia — cualquier archivo inicial obliga a un merge de historias no relacionadas en el primer push), y anotar su nombre porque determina la ruta pública de GitHub Pages
+  > Ejecutada: el repositorio es `ragudc1984/idrconsultingcapacitacion`. Se creó con el README autogenerado de GitHub (solo el título, commit `cc53f84`); en vez de un merge de historias no relacionadas se sobrescribió con `git push --force-with-lease=main:cc53f84…`, que solo empuja si el remoto sigue en ese commit. Era seguro porque nadie lo había clonado y el README no tenía contenido.
+- [x] 3.2 Configurar el remoto `origin` apuntando a ese repositorio y verificar con `git remote -v` que la dirección es la correcta
+- [x] 3.3 Empujar `main` al remoto estableciendo el seguimiento, y verificar en la web de GitHub que el repositorio muestra el commit inicial con los 111 archivos y que `main` es la rama predeterminada
+- [x] 3.4 Verificar que el repositorio remoto no contiene `node_modules/`, `dist/` ni ningún archivo de entorno, inspeccionando el árbol de archivos en la web
 
 ## 4. Puerta de verificación
 
-- [ ] 4.1 Agregar a `package.json` el script `verify` que encadene con `&&`, en orden, la instalación limpia de dependencias (`npm ci`), la construcción (`npm run build`) y el lint (`npm run lint`), y verificar que `npm run verify` ejecuta los tres pasos y termina con éxito
-- [ ] 4.2 Verificar que el script se detiene en el primer fallo: introducir un error de tipos deliberado, confirmar que `npm run verify` falla en la construcción, **no ejecuta el lint**, y termina con código de salida distinto de cero, y revertir el error
-- [ ] 4.3 Verificar el mismo comportamiento con una infracción deliberada de oxlint: `npm run verify` pasa la construcción, falla en el lint, y termina con código distinto de cero; revertir la infracción
-- [ ] 4.4 Verificar que `npm ci` es sensible a la discrepancia entre `package.json` y `package-lock.json` (es la razón de usarlo en vez de `npm install`), comprobando que falla si el lock no corresponde, y restaurar el estado
+- [x] 4.1 Agregar a `package.json` el script `verify` que encadene con `&&`, en orden, la instalación limpia de dependencias (`npm ci`), la construcción (`npm run build`) y el lint (`npm run lint`), y verificar que `npm run verify` ejecuta los tres pasos y termina con éxito
+- [x] 4.2 Verificar que el script se detiene en el primer fallo: introducir un error de tipos deliberado, confirmar que `npm run verify` falla en la construcción, **no ejecuta el lint**, y termina con código de salida distinto de cero, y revertir el error
+- [x] 4.3 Verificar el mismo comportamiento con una infracción deliberada de oxlint: `npm run verify` pasa la construcción, falla en el lint, y termina con código distinto de cero; revertir la infracción
+- [x] 4.4 Verificar que `npm ci` es sensible a la discrepancia entre `package.json` y `package-lock.json` (es la razón de usarlo en vez de `npm install`), comprobando que falla si el lock no corresponde, y restaurar el estado
 
 ## 5. Documentar el flujo
 
-- [ ] 5.1 Reescribir el `README.md` sustituyendo la plantilla de Vite por: qué es el repositorio, la dirección pública de la aplicación al inicio (se completa en la tarea 6.4), la puesta en marcha desde cero, la puerta de verificación y el flujo de rama y pull request, conservando la nota sobre las reglas type-aware de oxlint
-- [ ] 5.2 Documentar en el `README.md`, junto al script `verify`, que sus pasos deben actualizarse en el mismo cambio que modifique el workflow de GitHub, y que `act` es la opción de mayor fidelidad para quien quiera ejecutar los workflows reales localmente
-- [ ] 5.3 Dejar escrito en el `README.md` que el repositorio y la aplicación publicada son públicos y que no deben cargarse datos reales
-- [ ] 5.4 Verificar la documentación de puesta en marcha siguiéndola desde cero en un clon limpio del repositorio, en otra carpeta, confirmando que no hace falta ningún conocimiento que no esté escrito
+- [x] 5.1 Reescribir el `README.md` sustituyendo la plantilla de Vite por: qué es el repositorio, la dirección pública de la aplicación al inicio (se completa en la tarea 6.4), la puesta en marcha desde cero, la puerta de verificación y el flujo de rama y pull request, conservando la nota sobre las reglas type-aware de oxlint
+- [x] 5.2 Documentar en el `README.md`, junto al script `verify`, que sus pasos deben actualizarse en el mismo cambio que modifique el workflow de GitHub, y que `act` es la opción de mayor fidelidad para quien quiera ejecutar los workflows reales localmente
+- [x] 5.3 Dejar escrito en el `README.md` que el repositorio y la aplicación publicada son públicos y que no deben cargarse datos reales
+- [x] 5.4 Verificar la documentación de puesta en marcha siguiéndola desde cero en un clon limpio del repositorio, en otra carpeta, confirmando que no hace falta ningún conocimiento que no esté escrito
 - [ ] 5.5 Integrar los cambios de las secciones 4 y 5 por pull request contra `main` —el primer cambio que recorre el flujo completo es el flujo mismo— y verificar que el pull request se puede abrir e integrar
 
 ## 6. Publicación
 
+> La 6.3, la 6.4 y la 6.5 requieren un workflow que despliegue en GitHub Pages,
+> y este cambio no lo crea: lo aporta `.github/workflows/deploy.yml` (tarea 9.1
+> de `replace-localstorage-with-api-backend`). Hasta entonces se dejan sin marcar
+> (`design.md` — Migration Plan). La 6.1 y la 6.2 no dependen de él.
+
 - [ ] 6.1 **[manual]** Habilitar GitHub Pages en el repositorio con origen en GitHub Actions, y verificar que la configuración queda activa
-- [ ] 6.2 Configurar la ruta base del sitio para que los assets carguen bajo `/<repo>/` y no en la raíz (con la base por defecto, GitHub Pages devuelve 404 en todos los assets y la página queda en blanco sin error visible), y verificar localmente con `npm run preview` que los assets cargan bajo esa ruta
+- [x] 6.2 Configurar la ruta base del sitio para que los assets carguen bajo `/idrconsultingcapacitacion/` y no en la raíz (con la base por defecto, GitHub Pages devuelve 404 en todos los assets y la página queda en blanco sin error visible), y verificar localmente con `npm run preview` que los assets cargan bajo esa ruta
 - [ ] 6.3 **[manual]** Publicar la aplicación y verificar abriendo `https://ragudc1984.github.io/<repo>/` desde otro dispositivo, sin el proyecto instalado, que la lista de tareas carga y es usable
 - [ ] 6.4 Escribir la dirección pública definitiva al inicio del `README.md` y verificar que el enlace abre la aplicación
 - [ ] 6.5 Verificar que lo publicado refleja la rama principal: integrar un cambio visible en `main`, esperar la publicación, y confirmar que la dirección pública lo muestra

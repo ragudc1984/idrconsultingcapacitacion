@@ -13,6 +13,8 @@ Ver `proposal.md` — Why. Estado verificado del repositorio al escribir esto:
 - `README.md` es la plantilla de Vite sin modificar. Lo único aprovechable es su
   nota sobre reglas type-aware de oxlint.
 - Ni `gh` (CLI de GitHub) ni `act` están instalados en esta máquina.
+  *Corrección al aplicar:* `gh` sí estaba instalado y autenticado como
+  `ragudc1984`; `act` no. No cambia ninguna decisión (ver Decisions).
 - No hay directorio `.github/`; la automatización que este flujo reproduce
   localmente todavía no existe —la crea el cambio
   `replace-localstorage-with-api-backend`.
@@ -106,11 +108,16 @@ decide explícitamente si entra o se ignora, en lugar de que entre por inercia.
 corregir la configuración del repositorio remoto. Renombrar primero evita el
 paso.
 
-**El repositorio remoto se crea desde la web, no con `gh`.** El CLI de GitHub no
-está instalado y el pedido describe entrar a `https://github.com/`. Instalarlo
-para una operación que se hace una vez no se justifica. Se crea **vacío** —sin
+**El repositorio remoto se crea desde la web, no con `gh`.** El pedido describe
+entrar a `https://github.com/`, y crear un repositorio público es una acción de la
+persona dueña de la cuenta. (La justificación original —que `gh` no estaba
+instalado— resultó falsa al aplicar; la decisión se mantuvo por el otro motivo.) Se crea **vacío** —sin
 README, sin `.gitignore`, sin licencia— porque cualquier archivo inicial en el
 remoto obliga a un merge con historias no relacionadas en el primer push.
+*Al aplicar:* el repositorio se creó con el README autogenerado (solo el título).
+Se resolvió con `git push --force-with-lease` atado a ese commit, no con un merge:
+nadie lo había clonado y el README no tenía contenido, así que sobrescribirlo no
+perdía nada y dejaba el historial como estaba planeado.
 
 **El `README.md` se reescribe, no se amplía.** Hoy es la plantilla de Vite y
 describe un proyecto genérico. Pasa a contener: qué es el repositorio, la
@@ -158,11 +165,12 @@ requerible una comprobación que no ha visto correr.
 rama `main`, que son prerrequisitos de las fases 7 a 9 de aquel. Aplicarlo
 después dejaría tareas duplicadas entre ambos.
 
-**Dependencia en el otro sentido, y cómo se resuelve:** dos requisitos de esta
+**Dependencia en el otro sentido, y cómo se resuelve:** tres requisitos de esta
 capacidad no se pueden satisfacer hasta que exista la automatización que el otro
-cambio crea —la reproducción local solo puede coincidir con un workflow que
-todavía no está escrito, y la protección de rama solo puede exigir una
-comprobación que nunca ha corrido. Por eso el `verify` de este cambio se escribe
+cambio crea —la aplicación solo se publica en GitHub Pages con un workflow de
+despliegue (`deploy.yml`, tarea 9.1 de aquel cambio), la reproducción local solo
+puede coincidir con un workflow que todavía no está escrito, y la protección de
+rama solo puede exigir una comprobación que nunca ha corrido. Por eso el `verify` de este cambio se escribe
 contra los pasos que el workflow **va a** tener (instalar, build, lint), y la
 verificación de coincidencia real queda como tarea de este cambio a ejecutar
 cuando el workflow exista. Está escrito así a propósito en lugar de fingir que el
@@ -175,7 +183,8 @@ orden es limpio.
 3. Crear el remoto vacío en GitHub y empujar.
 4. Agregar el script `verify` y reescribir el `README.md`, por pull request —el
    primer cambio que recorre el flujo completo es el flujo mismo.
-5. Habilitar GitHub Pages y publicar.
+5. Habilitar GitHub Pages y configurar la ruta base; publicar cuando exista
+   `deploy.yml`.
 6. Proteger `main`, una vez que hay una comprobación verde que exigir.
 
 **Reversión:** hasta el paso 3 todo es local y se deshace borrando `.git`. A
@@ -184,9 +193,11 @@ reescrito. El paso 6 se deshace desde la configuración del repositorio.
 
 ## Open Questions
 
-- El nombre del repositorio remoto determina la ruta pública de GitHub Pages. Se
-  decide al crearlo (paso 3) y solo afecta a la dirección que se escribe en el
-  `README.md`.
-- Si `.claude/settings.local.json` debe versionarse o ignorarse se resuelve en la
-  revisión del paso 1, mirando su contenido real. No cambia el enfoque ni las
-  tareas.
+Ambas resueltas al aplicar:
+
+- ~~El nombre del repositorio remoto.~~ Es `idrconsultingcapacitacion`; la
+  dirección pública será `https://ragudc1984.github.io/idrconsultingcapacitacion/`
+  y la ruta base del build es `/idrconsultingcapacitacion/`.
+- ~~Si `.claude/settings.local.json` se versiona.~~ No se versiona: contiene
+  rutas absolutas de una máquina concreta. La decisión está en el mensaje del
+  commit inicial.
