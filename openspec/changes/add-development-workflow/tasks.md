@@ -26,10 +26,11 @@
 
 ## 3. Repositorio remoto
 
-- [ ] 3.1 **[manual]** Entrar a `https://github.com/` con la cuenta `ragudc1984`, crear un repositorio **vacío** (sin README, sin `.gitignore` y sin licencia — cualquier archivo inicial obliga a un merge de historias no relacionadas en el primer push), y anotar su nombre porque determina la ruta pública de GitHub Pages
-- [ ] 3.2 Configurar el remoto `origin` apuntando a ese repositorio y verificar con `git remote -v` que la dirección es la correcta
-- [ ] 3.3 Empujar `main` al remoto estableciendo el seguimiento, y verificar en la web de GitHub que el repositorio muestra el commit inicial con los 101 archivos y que `main` es la rama predeterminada
-- [ ] 3.4 Verificar que el repositorio remoto no contiene `node_modules/`, `dist/` ni ningún archivo de entorno, inspeccionando el árbol de archivos en la web
+- [x] 3.1 **[manual]** Entrar a `https://github.com/` con la cuenta `ragudc1984`, crear un repositorio **vacío** (sin README, sin `.gitignore` y sin licencia — cualquier archivo inicial obliga a un merge de historias no relacionadas en el primer push), y anotar su nombre porque determina la ruta pública de GitHub Pages
+  > Ejecutada: el repositorio es `ragudc1984/idrconsultingcapacitacion`. Se creó con el README autogenerado de GitHub (solo el título, commit `cc53f84`); en vez de un merge de historias no relacionadas se sobrescribió con `git push --force-with-lease=main:cc53f84…`, que solo empuja si el remoto sigue en ese commit. Era seguro porque nadie lo había clonado y el README no tenía contenido.
+- [x] 3.2 Configurar el remoto `origin` apuntando a ese repositorio y verificar con `git remote -v` que la dirección es la correcta
+- [x] 3.3 Empujar `main` al remoto estableciendo el seguimiento, y verificar en la web de GitHub que el repositorio muestra el commit inicial con los 111 archivos y que `main` es la rama predeterminada
+- [x] 3.4 Verificar que el repositorio remoto no contiene `node_modules/`, `dist/` ni ningún archivo de entorno, inspeccionando el árbol de archivos en la web
 
 ## 4. Puerta de verificación
 
@@ -48,8 +49,13 @@
 
 ## 6. Publicación
 
+> La 6.3, la 6.4 y la 6.5 requieren un workflow que despliegue en GitHub Pages,
+> y este cambio no lo crea: lo aporta `.github/workflows/deploy.yml` (tarea 9.1
+> de `replace-localstorage-with-api-backend`). Hasta entonces se dejan sin marcar
+> (`design.md` — Migration Plan). La 6.1 y la 6.2 no dependen de él.
+
 - [ ] 6.1 **[manual]** Habilitar GitHub Pages en el repositorio con origen en GitHub Actions, y verificar que la configuración queda activa
-- [x] 6.2 Configurar la ruta base del sitio para que los assets carguen bajo `/<repo>/` y no en la raíz (con la base por defecto, GitHub Pages devuelve 404 en todos los assets y la página queda en blanco sin error visible), y verificar localmente con `npm run preview` que los assets cargan bajo esa ruta
+- [x] 6.2 Configurar la ruta base del sitio para que los assets carguen bajo `/idrconsultingcapacitacion/` y no en la raíz (con la base por defecto, GitHub Pages devuelve 404 en todos los assets y la página queda en blanco sin error visible), y verificar localmente con `npm run preview` que los assets cargan bajo esa ruta
 - [ ] 6.3 **[manual]** Publicar la aplicación y verificar abriendo `https://ragudc1984.github.io/<repo>/` desde otro dispositivo, sin el proyecto instalado, que la lista de tareas carga y es usable
 - [ ] 6.4 Escribir la dirección pública definitiva al inicio del `README.md` y verificar que el enlace abre la aplicación
 - [ ] 6.5 Verificar que lo publicado refleja la rama principal: integrar un cambio visible en `main`, esperar la publicación, y confirmar que la dirección pública lo muestra

@@ -94,7 +94,8 @@ protegida.
 el commit inicial y la rama `main` protegida, que son prerrequisitos de las fases
 7 a 9 de `replace-localstorage-with-api-backend`. **Conviene aplicarlo primero.**
 Si se aplicara después, las tareas de creación del remoto quedarían duplicadas
-entre ambos cambios.
+entre ambos cambios. En el otro sentido, la publicación en GitHub Pages depende
+del workflow de despliegue (`deploy.yml`) que aporta aquel cambio.
 
 **Riesgo operativo conocido:** el commit inicial abarca 101 rutas, incluidas
 `.claude/settings.local.json` y el directorio completo de skills vendorizadas. Lo

@@ -33,8 +33,8 @@ ese rastro no se puede reponer.
 Requisitos: **Node.js 20 o superior** y npm.
 
 ```bash
-git clone https://github.com/ragudc1984/capacitacion-idr-consulting.git
-cd capacitacion-idr-consulting
+git clone https://github.com/ragudc1984/idrconsultingcapacitacion.git
+cd idrconsultingcapacitacion
 npm install
 npm run dev
 ```
