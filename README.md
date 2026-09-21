@@ -43,6 +43,12 @@ npm run dev
 local. No hacen falta variables de entorno: la aplicación guarda las tareas en el
 `localStorage` del navegador y no habla con ningún servicio externo.
 
+> **En Windows, clona en una ruta corta.** Las rutas del archivo histórico de
+> `openspec/` llegan a 102 caracteres, así que un destino profundo agota el
+> límite de 260 de Windows y el clon falla con `Filename too long` tras haber
+> descargado los objetos. Clona cerca de la raíz del disco, o habilita rutas
+> largas con `git config --system core.longpaths true`.
+
 ## Comandos
 
 ```bash
