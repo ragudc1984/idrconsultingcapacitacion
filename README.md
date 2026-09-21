@@ -30,7 +30,7 @@ ese rastro no se puede reponer.
 
 ## Puesta en marcha
 
-Requisitos: **Node.js 20 o superior** y npm.
+Requisitos: **Node.js 20.19 o superior** (o 22.12+; lo exige Vite) y npm.
 
 ```bash
 git clone https://github.com/ragudc1984/idrconsultingcapacitacion.git

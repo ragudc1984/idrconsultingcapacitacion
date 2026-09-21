@@ -1,0 +1,30 @@
+# Integracion continua: la misma puerta que `npm run verify`, en cada pull
+# request contra main. Si cambian estos pasos, `verify` en package.json se
+# actualiza en el mismo cambio (spec development-workflow).
+name: ci
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Construir
+        run: npm run build
+
+      - name: Lint
+        run: npm run lint

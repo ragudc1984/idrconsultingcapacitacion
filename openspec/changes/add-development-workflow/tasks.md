@@ -45,36 +45,30 @@
 - [x] 5.2 Documentar en el `README.md`, junto al script `verify`, que sus pasos deben actualizarse en el mismo cambio que modifique el workflow de GitHub, y que `act` es la opción de mayor fidelidad para quien quiera ejecutar los workflows reales localmente
 - [x] 5.3 Dejar escrito en el `README.md` que el repositorio y la aplicación publicada son públicos y que no deben cargarse datos reales
 - [x] 5.4 Verificar la documentación de puesta en marcha siguiéndola desde cero en un clon limpio del repositorio, en otra carpeta, confirmando que no hace falta ningún conocimiento que no esté escrito
-- [ ] 5.5 Integrar los cambios de las secciones 4 y 5 por pull request contra `main` —el primer cambio que recorre el flujo completo es el flujo mismo— y verificar que el pull request se puede abrir e integrar
+- [x] 5.5 Integrar los cambios de las secciones 4 y 5 por pull request contra `main` —el primer cambio que recorre el flujo completo es el flujo mismo— y verificar que el pull request se puede abrir e integrar
 
-## 6. Publicación
+## 6. Automatización y publicación
 
-> La 6.3, la 6.4 y la 6.5 requieren un workflow que despliegue en GitHub Pages,
-> y este cambio no lo crea: lo aporta `.github/workflows/deploy.yml` (tarea 9.1
-> de `replace-localstorage-with-api-backend`). Hasta entonces se dejan sin marcar
-> (`design.md` — Migration Plan). La 6.1 y la 6.2 no dependen de él.
+> Los workflows se crean aquí en su versión mínima (`design.md` — Decisions);
+> `replace-localstorage-with-api-backend` los extiende después.
 
-- [ ] 6.1 **[manual]** Habilitar GitHub Pages en el repositorio con origen en GitHub Actions, y verificar que la configuración queda activa
+- [x] 6.1 **[manual]** Habilitar GitHub Pages en el repositorio con origen en GitHub Actions, y verificar que la configuración queda activa
 - [x] 6.2 Configurar la ruta base del sitio para que los assets carguen bajo `/idrconsultingcapacitacion/` y no en la raíz (con la base por defecto, GitHub Pages devuelve 404 en todos los assets y la página queda en blanco sin error visible), y verificar localmente con `npm run preview` que los assets cargan bajo esa ruta
-- [ ] 6.3 **[manual]** Publicar la aplicación y verificar abriendo `https://ragudc1984.github.io/<repo>/` desde otro dispositivo, sin el proyecto instalado, que la lista de tareas carga y es usable
-- [ ] 6.4 Escribir la dirección pública definitiva al inicio del `README.md` y verificar que el enlace abre la aplicación
-- [ ] 6.5 Verificar que lo publicado refleja la rama principal: integrar un cambio visible en `main`, esperar la publicación, y confirmar que la dirección pública lo muestra
+- [ ] 6.3 Crear `.github/workflows/ci.yml` (en cada pull request contra `main`: `npm ci`, `npm run build`, `npm run lint` —los mismos comandos que `verify`) y `.github/workflows/deploy.yml` (en cada push a `main`: los mismos pasos y, solo si pasan, publicar `dist/` en GitHub Pages), verificar que ambos son YAML válido, e integrarlos por pull request confirmando que `ci` se ejecuta en ese mismo pull request
+- [ ] 6.4 **[manual]** Publicar la aplicación y verificar abriendo `https://ragudc1984.github.io/idrconsultingcapacitacion/` desde otro dispositivo, sin el proyecto instalado, que la lista de tareas carga y es usable
+- [ ] 6.5 Escribir la dirección pública definitiva al inicio del `README.md` y verificar que el enlace abre la aplicación
+- [ ] 6.6 Verificar que lo publicado refleja la rama principal: integrar un cambio visible en `main`, esperar la publicación, y confirmar que la dirección pública lo muestra
 
 ## 7. Protección de la rama principal
 
-> Se hace al final: GitHub no ofrece como requerible una comprobación que nunca
-> ha visto correr (`design.md` — Decisions).
+> Se hace después de la 6.3: GitHub no ofrece como requerible una comprobación
+> que nunca ha visto correr (`design.md` — Decisions).
 
 - [ ] 7.1 **[manual]** Configurar la protección de `main` exigiendo pull request y comprobaciones en verde antes de integrar, y verificar que la configuración queda guardada
 - [ ] 7.2 Verificar que el push directo queda rechazado: intentar empujar un commit directamente a `main` y confirmar que el remoto lo rechaza, dejando el intento sin efecto
 - [ ] 7.3 Verificar el flujo completo de integración: crear una rama de trabajo, empujarla, abrir un pull request, esperar las comprobaciones, e integrarlo
 
 ## 8. Coincidencia entre la verificación local y la automatización
-
-> Estas tareas requieren que exista el workflow de GitHub, que crea el cambio
-> `replace-localstorage-with-api-backend`. Se ejecutan cuando ese cambio haya
-> aportado `.github/workflows/ci.yml`; hasta entonces se dejan sin marcar
-> (`design.md` — Migration Plan).
 
 - [ ] 8.1 Comparar paso a paso el script `verify` con el workflow de integración continua y confirmar que ejecutan los mismos comandos, ajustando `verify` si difieren
 - [ ] 8.2 Verificar la coincidencia en la práctica: abrir un pull request con un cambio que pasa `npm run verify` localmente y confirmar que la automatización remota también pasa

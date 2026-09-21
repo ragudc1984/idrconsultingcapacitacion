@@ -159,6 +159,8 @@ que `npm run dev` siga funcionando en la raíz.
 build de ambos workspaces. `deploy.yml` corre en push a la rama principal: repite
 lint y build, luego publica. Se repiten a propósito —un workflow de despliegue
 que confía en que otro ya verificó es un despliegue que un día publica algo roto.
+*Nota:* `add-development-workflow` crea ambos en versión mínima (un solo
+proyecto, publicación solo en Pages); este cambio los extiende.
 
 **El despliegue del API se dispara con un deploy hook de Render, y las
 migraciones se ejecutan como comando de pre-deploy del propio servicio, no desde
@@ -236,9 +238,8 @@ pierde nada.
 
 ## Open Questions
 
-- El nombre del repositorio remoto bajo `ragudc1984` determina la ruta base de
-  GitHub Pages. Se resuelve al crearlo, en la fase de despliegue, y solo afecta
-  al valor de una variable.
+- ~~El nombre del repositorio remoto.~~ Resuelto por `add-development-workflow`:
+  `idrconsultingcapacitacion`, con ruta base `/idrconsultingcapacitacion/`.
 - Si el proveedor de PostgreSQL gestionado elegido (Neon) resultara no estar
   disponible para la cuenta, Supabase cubre el mismo rol sin cambiar nada del
   diseño: sigue siendo PostgreSQL detrás de un `DATABASE_URL`.

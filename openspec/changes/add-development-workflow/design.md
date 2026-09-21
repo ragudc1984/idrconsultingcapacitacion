@@ -126,6 +126,16 @@ puerta de verificación, y el flujo de rama y pull request. La nota sobre reglas
 type-aware de oxlint se conserva porque es lo único aprovechable de la
 plantilla.
 
+**Los workflows de GitHub se crean en este cambio, en versión mínima.** Tres
+requisitos de esta capacidad —la publicación, la protección de rama con
+comprobaciones en verde y la coincidencia entre lo local y lo remoto— no se
+pueden cumplir sin automatización, y esperar a `replace-localstorage-with-api-backend`
+obligaba a aplicar un backend entero antes de poder publicar una lista de tareas
+estática. `ci.yml` ejecuta exactamente los pasos de `verify`; `deploy.yml` los
+repite y solo entonces publica `dist/` en Pages, sin API ni Render. El spec
+completo de la automatización sigue siendo `continuous-delivery`, y aquel cambio
+extiende estos archivos en lugar de crearlos.
+
 **La protección de rama se configura al final, después del primer pull request
 verde.** Exigir una comprobación que todavía no se ha ejecutado nunca deja el
 repositorio en un estado donde nada se puede integrar: GitHub no ofrece como
@@ -165,16 +175,12 @@ requerible una comprobación que no ha visto correr.
 rama `main`, que son prerrequisitos de las fases 7 a 9 de aquel. Aplicarlo
 después dejaría tareas duplicadas entre ambos.
 
-**Dependencia en el otro sentido, y cómo se resuelve:** tres requisitos de esta
-capacidad no se pueden satisfacer hasta que exista la automatización que el otro
-cambio crea —la aplicación solo se publica en GitHub Pages con un workflow de
-despliegue (`deploy.yml`, tarea 9.1 de aquel cambio), la reproducción local solo
-puede coincidir con un workflow que todavía no está escrito, y la protección de
-rama solo puede exigir una comprobación que nunca ha corrido. Por eso el `verify` de este cambio se escribe
-contra los pasos que el workflow **va a** tener (instalar, build, lint), y la
-verificación de coincidencia real queda como tarea de este cambio a ejecutar
-cuando el workflow exista. Está escrito así a propósito en lugar de fingir que el
-orden es limpio.
+**Dependencia en el otro sentido, y cómo se resolvió:** la versión anterior de
+este plan dejaba la publicación, la protección de rama y la coincidencia
+local-remoto esperando a los workflows de `replace-localstorage-with-api-backend`.
+Al aplicar se decidió crearlos aquí en versión mínima (ver Decisions); aquel
+cambio pasa a extenderlos —workspaces en `ci.yml`, `VITE_API_URL` y el deploy
+hook de Render en `deploy.yml`— y a ampliar la protección de rama existente.
 
 **Secuencia:**
 
@@ -183,8 +189,8 @@ orden es limpio.
 3. Crear el remoto vacío en GitHub y empujar.
 4. Agregar el script `verify` y reescribir el `README.md`, por pull request —el
    primer cambio que recorre el flujo completo es el flujo mismo.
-5. Habilitar GitHub Pages y configurar la ruta base; publicar cuando exista
-   `deploy.yml`.
+5. Habilitar GitHub Pages y configurar la ruta base; crear `ci.yml` y
+   `deploy.yml` por pull request, y publicar.
 6. Proteger `main`, una vez que hay una comprobación verde que exigir.
 
 **Reversión:** hasta el paso 3 todo es local y se deshace borrando `.git`. A

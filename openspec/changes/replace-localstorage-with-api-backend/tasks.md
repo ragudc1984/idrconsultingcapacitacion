@@ -70,10 +70,10 @@
 
 ## 7. Publicar en remoto
 
-- [ ] 7.1 **[manual]** Crear el repositorio remoto bajo la cuenta `ragudc1984`, empujar el trabajo, renombrar la rama principal a `main`, y verificar que el repositorio remoto muestra el historial completo
+- [ ] 7.1 Verificar que sigue vigente el repositorio remoto creado por `add-development-workflow` (`ragudc1984/idrconsultingcapacitacion`, rama principal `main`) y que muestra el historial completo
 - [ ] 7.2 **[manual]** Crear el servicio web del API en Render conectado al repositorio, configurar `DATABASE_URL`, `PORT` y `CORS_ORIGINS` como variables del servicio, y el comando de pre-deploy `npx prisma migrate deploy`, y verificar que la comprobación de disponibilidad responde con éxito en la URL pública
-- [ ] 7.3 Configurar `base` en `vite.config.ts` a partir de una variable de entorno para que la app funcione tanto en la raíz en desarrollo como bajo la ruta del repositorio en GitHub Pages, y verificar con `npm run preview` que los assets cargan bajo esa ruta base
-- [ ] 7.4 **[manual]** Habilitar GitHub Pages en el repositorio con origen en GitHub Actions, y verificar que la configuración queda activa
+- [ ] 7.3 Trasladar a `apps/web` la configuración de `base` que creó `add-development-workflow` en `vite.config.ts` (`/idrconsultingcapacitacion/`, sobrescribible con `VITE_BASE`, aplicada en build y preview), y verificar con `npm run preview` que los assets cargan bajo esa ruta base
+- [ ] 7.4 Verificar que GitHub Pages sigue habilitado con origen en GitHub Actions (lo habilitó `add-development-workflow`)
 - [ ] 7.5 **[manual]** Verificar el sistema publicado de punta a punta desde otro dispositivo: crear, completar, editar y eliminar una tarea contra el API remoto, recargar y confirmar que los cambios siguen ahí
 - [ ] 7.6 **[manual]** Verificar el escenario de servicio suspendido: dejar el API dormir por inactividad, abrir la web publicada, y confirmar que el estado de carga se mantiene comprensible durante toda la espera sin mostrar error ni lista vacía
 
@@ -81,20 +81,20 @@
 
 > Cubre la capacidad `continuous-delivery`.
 
-- [ ] 8.1 Crear `.github/workflows/ci.yml` que se dispare en pull request contra la rama principal, instale dependencias con caché, y ejecute lint y build de todos los workspaces, y verificar que el archivo es YAML válido
+- [ ] 8.1 Extender `.github/workflows/ci.yml` (creado en versión mínima por `add-development-workflow`) para que instale dependencias con caché y ejecute lint y build de todos los workspaces, actualizando el script `verify` en el mismo cambio, y verificar que el archivo es YAML válido
 - [ ] 8.2 Verificar el escenario de cambio exitoso: abrir un pull request con un cambio que pasa lint y compila, y confirmar que la ejecución se reporta exitosa en el pull request
 - [ ] 8.3 Verificar el escenario de compilación rota: abrir un pull request con un error de tipos deliberado, confirmar que la ejecución falla indicando qué comprobación falló, y revertir el error
 - [ ] 8.4 Verificar el escenario de violación de lint: abrir un pull request con una infracción deliberada de oxlint, confirmar que la ejecución falla, y revertir la infracción
 
 ## 9. Entrega continua
 
-- [ ] 9.1 Crear `.github/workflows/deploy.yml` que se dispare en push a la rama principal, repita lint y build, construya `apps/web` con `VITE_API_URL` apuntando al API publicado, publique el resultado en GitHub Pages, y dispare el deploy hook de Render para el API, y verificar que el archivo es YAML válido
+- [ ] 9.1 Extender `.github/workflows/deploy.yml` (creado en versión mínima por `add-development-workflow`, que ya repite lint y build y publica en Pages) para que construya `apps/web` con `VITE_API_URL` apuntando al API publicado, publique el resultado en GitHub Pages, y dispare el deploy hook de Render para el API, y verificar que el archivo es YAML válido
 - [ ] 9.2 **[manual]** Registrar el deploy hook de Render y la dirección pública del API como secreto y variable del repositorio respectivamente, y verificar que ningún valor aparece en archivos versionados con `git grep` sobre las cadenas involucradas
 - [ ] 9.3 Verificar el escenario de publicación exitosa: integrar un cambio visible en la rama principal y confirmar que la web publicada y el API reflejan ese cambio sin que nadie ejecute nada manualmente
 - [ ] 9.4 Verificar el escenario de que no se publica lo que no compila: integrar un cambio que rompe la compilación, confirmar que no se publicó nada y que la versión publicada anteriormente sigue accesible, y revertir
 - [ ] 9.5 Verificar el escenario de migración aplicada antes de servir: integrar un cambio que incluya una migración de esquema y confirmar en los registros de Render que la migración se aplicó antes de que la versión nueva atendiera solicitudes
 - [ ] 9.6 Verificar que los registros de la primera ejecución de publicación no imprimen el valor de ningún secreto
-- [ ] 9.7 **[manual]** Configurar la protección de la rama principal en GitHub exigiendo que las comprobaciones de integración continua sean exitosas antes de integrar, y verificar el escenario del spec intentando integrar un pull request con comprobaciones fallidas y confirmando que GitHub lo impide
+- [ ] 9.7 **[manual]** Revisar la protección de la rama principal que configuró `add-development-workflow` para que exija las comprobaciones de integración continua ampliadas antes de integrar, y verificar el escenario del spec intentando integrar un pull request con comprobaciones fallidas y confirmando que GitHub lo impide
 
 ## 10. Verificación final del cambio
 

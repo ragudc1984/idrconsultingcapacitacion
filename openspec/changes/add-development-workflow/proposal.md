@@ -85,6 +85,8 @@ request— pero ninguna de las dos modifica los requisitos de la otra.
   aplicación.
 - `.gitignore` — se revisa antes del commit inicial para confirmar que nada
   sensible entra al historial.
+- `.github/workflows/` — `ci.yml` y `deploy.yml` en versión mínima (build, lint y
+  publicación en Pages), que `replace-localstorage-with-api-backend` extiende.
 
 **Sistemas externos:** un repositorio en GitHub bajo `ragudc1984`
 (`ragudc514@gmail.com`) con GitHub Pages habilitado y la rama principal
@@ -94,8 +96,8 @@ protegida.
 el commit inicial y la rama `main` protegida, que son prerrequisitos de las fases
 7 a 9 de `replace-localstorage-with-api-backend`. **Conviene aplicarlo primero.**
 Si se aplicara después, las tareas de creación del remoto quedarían duplicadas
-entre ambos cambios. En el otro sentido, la publicación en GitHub Pages depende
-del workflow de despliegue (`deploy.yml`) que aporta aquel cambio.
+entre ambos cambios. Este cambio crea además los workflows mínimos de
+integración y publicación; aquel los extiende en lugar de crearlos.
 
 **Riesgo operativo conocido:** el commit inicial abarca 101 rutas, incluidas
 `.claude/settings.local.json` y el directorio completo de skills vendorizadas. Lo
