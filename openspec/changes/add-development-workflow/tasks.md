@@ -20,9 +20,9 @@
 
 ## 2. Commit inicial y rama principal
 
-- [ ] 2.1 Crear el commit inicial con todo el trabajo existente y un mensaje en español que describa qué contiene el repositorio, y verificar con `git log --stat` que incluye la aplicación, `openspec/specs/`, `openspec/changes/archive/` y los tres documentos de autoridad (`PRODUCT.md`, `DESIGN.md`, `CLAUDE.md`)
-- [ ] 2.2 Renombrar la rama `master` a `main` y verificar con `git branch` que es la única rama y que apunta al commit inicial
-- [ ] 2.3 Verificar con `git status` que el árbol de trabajo queda limpio, sin archivos modificados ni sin seguimiento pendientes
+- [x] 2.1 Crear el commit inicial con todo el trabajo existente y un mensaje en español que describa qué contiene el repositorio, y verificar con `git log --stat` que incluye la aplicación, `openspec/specs/`, `openspec/changes/archive/` y los tres documentos de autoridad (`PRODUCT.md`, `DESIGN.md`, `CLAUDE.md`)
+- [x] 2.2 Renombrar la rama `master` a `main` y verificar con `git branch` que es la única rama y que apunta al commit inicial
+- [x] 2.3 Verificar con `git status` que el árbol de trabajo queda limpio, sin archivos modificados ni sin seguimiento pendientes
 
 ## 3. Repositorio remoto
 
@@ -33,10 +33,10 @@
 
 ## 4. Puerta de verificación
 
-- [ ] 4.1 Agregar a `package.json` el script `verify` que encadene con `&&`, en orden, la instalación limpia de dependencias (`npm ci`), la construcción (`npm run build`) y el lint (`npm run lint`), y verificar que `npm run verify` ejecuta los tres pasos y termina con éxito
-- [ ] 4.2 Verificar que el script se detiene en el primer fallo: introducir un error de tipos deliberado, confirmar que `npm run verify` falla en la construcción, **no ejecuta el lint**, y termina con código de salida distinto de cero, y revertir el error
-- [ ] 4.3 Verificar el mismo comportamiento con una infracción deliberada de oxlint: `npm run verify` pasa la construcción, falla en el lint, y termina con código distinto de cero; revertir la infracción
-- [ ] 4.4 Verificar que `npm ci` es sensible a la discrepancia entre `package.json` y `package-lock.json` (es la razón de usarlo en vez de `npm install`), comprobando que falla si el lock no corresponde, y restaurar el estado
+- [x] 4.1 Agregar a `package.json` el script `verify` que encadene con `&&`, en orden, la instalación limpia de dependencias (`npm ci`), la construcción (`npm run build`) y el lint (`npm run lint`), y verificar que `npm run verify` ejecuta los tres pasos y termina con éxito
+- [x] 4.2 Verificar que el script se detiene en el primer fallo: introducir un error de tipos deliberado, confirmar que `npm run verify` falla en la construcción, **no ejecuta el lint**, y termina con código de salida distinto de cero, y revertir el error
+- [x] 4.3 Verificar el mismo comportamiento con una infracción deliberada de oxlint: `npm run verify` pasa la construcción, falla en el lint, y termina con código distinto de cero; revertir la infracción
+- [x] 4.4 Verificar que `npm ci` es sensible a la discrepancia entre `package.json` y `package-lock.json` (es la razón de usarlo en vez de `npm install`), comprobando que falla si el lock no corresponde, y restaurar el estado
 
 ## 5. Documentar el flujo
 
