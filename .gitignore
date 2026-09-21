@@ -1,0 +1,36 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Variables de entorno. Nunca entran al historial: lo que se commitea una vez
+# queda en el historial aunque se borre despues. `.env.example` si se versiona,
+# porque documenta que variables hacen falta sin llevar ningun valor real.
+.env
+.env.*
+!.env.example
+
+# Configuracion local de Claude Code. Por convencion `settings.local.json` es
+# por maquina (frente a `settings.json`, que si se comparte), y este contiene
+# rutas absolutas de un equipo concreto que no existen en los demas.
+.claude/settings.local.json

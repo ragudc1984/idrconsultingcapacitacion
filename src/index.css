@@ -1,0 +1,295 @@
+/* La deteccion automatica de contenido de Tailwind escanea todo el proyecto y
+   estaba generando utilidades a partir de nombres de clase mencionados en la
+   prosa de los markdown de openspec (text-gray-400, rounded-2xl, max-w-md...).
+   Eso es CSS muerto viajando al usuario. Por eso la lista es explicita: nada se
+   escanea salvo lo declarado abajo, y asi un origen nuevo de contaminacion es
+   imposible por construccion. El costo es simetrico: markup colocado fuera de
+   index.html y de src/ NO se escanea y sus estilos faltaran. Cualquier ubicacion
+   nueva de componentes tiene que agregar aqui su propia directiva @source. */
+@import "tailwindcss" source(none);
+
+@source "../index.html";
+@source "./**/*.{ts,tsx}";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Space Grotesk", "Inter", ui-sans-serif, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+
+  /* --- Primitivas ---------------------------------------------------------
+     El tema oscuro es neón sobre negro frío: el color es luz, y el cian
+     encabeza por brillo (L 0.87 contra 0.70 y 0.73).
+
+     El tema claro no puede reproducir neón — intentarlo fue lo que dejó el
+     cian a 1.96:1. Aquí el color es tinta sobre papel: los tres acentos bajan
+     a una banda estrecha de lightness (0.50 a 0.54) y el cian encabeza por
+     densidad, siendo el más oscuro. Misma jerarquía, expresada en el medio
+     que cada tema tiene disponible. */
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --border: #c8cad3;
+  --text: #12151c;
+  --text-muted: #626b7a;
+
+  --cyan: #0a7366;
+  --magenta: #c1008d;
+  --violet: #6650e2;
+
+  --cyan-glow: rgba(10, 115, 102, 0.28);
+  --magenta-glow: rgba(193, 0, 141, 0.28);
+  --violet-glow: rgba(102, 80, 226, 0.28);
+
+  --overlay: rgba(18, 21, 28, 0.55);
+  --shadow-modal: 0 18px 48px -12px rgba(18, 21, 28, 0.35);
+
+  /* --- Roles semánticos ---------------------------------------------------
+     Los acentos ya superan 4.5:1 en ambos temas, así que el foco y el error
+     los reutilizan directamente. Los nombres se mantienen porque el rol es lo
+     que documenta la intención, y dan un solo punto de override si algún
+     acento vuelve a quedar corto. */
+  --ring-cyan: var(--cyan);
+  --ring-magenta: var(--magenta);
+  --ring-violet: var(--violet);
+
+  --danger: var(--magenta);
+}
+
+.dark {
+  color-scheme: dark;
+
+  --bg: #090c12;
+  --surface: #10141d;
+  --border: #2e333d;
+  --text: #e9edf6;
+  --text-muted: #7c869b;
+
+  --cyan: #4ff3d9;
+  --magenta: #ff59db;
+  --violet: #9a8bff;
+
+  --cyan-glow: rgba(79, 243, 217, 0.35);
+  --magenta-glow: rgba(255, 89, 219, 0.35);
+  --violet-glow: rgba(154, 139, 255, 0.35);
+
+  --overlay: rgba(4, 6, 10, 0.72);
+  --shadow-modal: 0 18px 48px -12px rgba(0, 0, 0, 0.7);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+/* Superficies que dibuja el navegador: también son parte del sistema. */
+::selection {
+  background-color: var(--violet-glow);
+  color: var(--text);
+}
+
+input {
+  caret-color: var(--cyan);
+}
+
+* {
+  scrollbar-color: var(--border) transparent;
+}
+
+/* Foco visible con outline real: respeta el radio, no altera el layout y
+   sobrevive al modo de alto contraste de Windows, donde box-shadow no pinta. */
+.focus-ring-cyan,
+.focus-ring-violet,
+.focus-ring-magenta {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.focus-ring-cyan:focus-visible {
+  outline-color: var(--ring-cyan);
+}
+
+.focus-ring-violet:focus-visible {
+  outline-color: var(--ring-violet);
+}
+
+.focus-ring-magenta:focus-visible {
+  outline-color: var(--ring-magenta);
+}
+
+/* Los inputs marcan el foco con su propio subrayado de 2px, no con un anillo:
+   el outline transparente sólo existe para que el modo de alto contraste de
+   Windows tenga algo que pintar, ya que ahí box-shadow no se renderiza. */
+.focus-underline:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+@media (forced-colors: active) {
+  .focus-underline:focus-visible {
+    outline-color: Highlight;
+  }
+}
+
+@media (forced-colors: active) {
+  .focus-ring-cyan:focus-visible,
+  .focus-ring-violet:focus-visible,
+  .focus-ring-magenta:focus-visible {
+    outline-color: Highlight;
+  }
+}
+
+/* --- Adaptación por contexto -----------------------------------------------
+   El tamaño de pantalla no dice cuál es el método de entrada: hay laptops con
+   pantalla táctil y tablets con teclado. Los objetivos crecen según el
+   puntero, no según el ancho, así que un ratón conserva la fila compacta y un
+   dedo obtiene los 44px que necesita. */
+@media (pointer: coarse) {
+  .touch-target {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+}
+
+/* El shell posee todo su padding para poder respetar el notch y la barra de
+   gestos: en horizontal, el recorte de la pantalla se come el lateral. */
+.page-shell {
+  padding-top: 2.5rem;
+  padding-bottom: max(2.5rem, env(safe-area-inset-bottom));
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+
+@media (min-width: 40rem) {
+  .page-shell {
+    padding-top: 3.5rem;
+    padding-bottom: max(3.5rem, env(safe-area-inset-bottom));
+    padding-left: max(1.5rem, env(safe-area-inset-left));
+    padding-right: max(1.5rem, env(safe-area-inset-right));
+  }
+}
+
+/* Teléfono en horizontal: 375px de alto no admiten 80px de aire vertical. */
+@media (max-height: 34rem) and (orientation: landscape) {
+  .page-shell {
+    padding-top: 1.5rem;
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+}
+
+.modal-shell {
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Títulos largos sin espacios no deben empujar los controles de la fila. */
+.task-title {
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+/* La tarea nueva se añade al final de la lista, así que sube hasta su posición:
+   entrar desde arriba la haría venir del lugar que ocupa la fila anterior.
+   Sólo opacity y transform, que son las dos propiedades que compone la GPU. */
+@keyframes task-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* El halo va aquí y no dentro de task-in: animar box-shadow obliga a repintar en
+   cada fotograma. El box-shadow queda fijo y lo que se anima es la opacidad. */
+@keyframes task-glow {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  45% {
+    opacity: 1;
+  }
+}
+
+@keyframes task-in-reduced {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-task-in {
+  animation: task-in 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.animate-task-in::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: 0 0 16px var(--cyan-glow);
+  animation: task-glow 200ms ease-out;
+}
+
+/* Sin movimiento, pero conservando la señal de "esto acaba de aparecer" y el
+   evento animationend del que depende la limpieza de estado. El halo se apaga
+   aquí: la opacidad en reposo es 0, así que basta con no animarlo. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-task-in {
+    animation: task-in-reduced 200ms ease-out;
+  }
+
+  .animate-task-in::after {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 120ms;
+  }
+}
+
+/* --- Impresión --------------------------------------------------------------
+   En papel no hay tema, ni hover, ni acciones: queda la lista. El estado
+   completado sobrevive por el tachado, que no depende del color. */
+@media print {
+  .page-shell {
+    padding: 0;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  /* Tercer tema del sistema. Remapea los mismos roles semánticos a tinta sobre
+     papel; body ya los hereda, así que no necesita declaraciones propias. */
+  :root,
+  .dark {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --border: #999999;
+    --text: #000000;
+    --text-muted: #444444;
+  }
+
+  li {
+    break-inside: avoid;
+  }
+}

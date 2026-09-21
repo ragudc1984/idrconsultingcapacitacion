@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180" role="img" aria-label="Lista de tareas">
+  <!-- Fuente de verdad de la marca. El PNG de apple-touch-icon deriva de esta
+       misma geometría, a sangre y sin redondeo, porque iOS aplica su propia
+       máscara. Colores: --bg y --cyan del tema oscuro. -->
+  <rect width="180" height="180" rx="40" fill="#090c12"/>
+  <path d="M46 94 L76 124 L134 60" fill="none" stroke="#4ff3d9" stroke-width="22"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,104 @@
+# Tasks
+
+> Las fases siguen el orden del Migration Plan de `design.md`: cada una deja el
+> repositorio en un estado verificable. Las tareas marcadas **[manual]** exigen
+> acceso a cuentas externas con las credenciales de `ragudc1984` y no pueden
+> marcarse sin ejecutarlas; si no se pueden ejecutar, se dejan sin marcar y se
+> dice por qué (`PRODUCT.md` — Principio 4).
+
+## 1. Reorganizar el repositorio a workspaces (sin cambiar comportamiento)
+
+- [ ] 1.1 Convertir el `package.json` de la raíz en manifiesto de workspaces (`workspaces: ["apps/*", "packages/*"]`, `private: true`), moviendo las dependencias y los scripts actuales a `apps/web/package.json`, y verificar que `npm install` desde la raíz termina sin errores y genera un único `package-lock.json`
+- [ ] 1.2 Mover `src/`, `index.html`, `public/`, `vite.config.ts` y los `tsconfig*.json` a `apps/web/`, ajustando las rutas relativas de los `tsconfig` y de `vite.config.ts`, y verificar que `npm run build -w apps/web` compila sin errores
+- [ ] 1.3 Reescribir las directivas `@source` de `apps/web/src/index.css` para las rutas nuevas, y verificar con `grep -F '.bg-\[var\(--bg\)\]' apps/web/dist/assets/*.css` que la clase sigue presente en el CSS construido (con `-F`, no regex: los selectores van escapados — `CLAUDE.md` — Gotchas)
+- [ ] 1.4 Añadir scripts de raíz `build`, `lint` y `dev` que deleguen en los workspaces, y verificar que `npm run build` y `npx oxlint` desde la raíz terminan sin errores
+- [ ] 1.5 Verificar manualmente con `npm run dev` que la aplicación se ve y funciona exactamente igual que antes de mover nada: crear, completar, editar y eliminar una tarea, alternar el tema, y recargar la página conservando las tareas (todavía vía `localStorage`)
+- [ ] 1.6 Verificar manualmente a ~375px y a ~1280px de ancho que el layout no cambió respecto al estado previo, confirmando que ninguna clase de Tailwind se perdió al mover los archivos
+
+## 2. Paquete compartido de tipos y validación
+
+- [ ] 2.1 Crear `packages/shared` con su `package.json` y `tsconfig.json`, exportando el tipo `Task` (`id`, `title`, `done`) movido desde `apps/web/src/types.ts`, y verificar que `npm run build` desde la raíz compila con el tipo resuelto desde el paquete
+- [ ] 2.2 Añadir `zod` a `packages/shared` y exportar `MAX_TITLE_LENGTH = 200` junto al esquema de validación de título (no vacío tras recortar espacios, máximo 200 caracteres) y a los esquemas de creación y actualización de tarea, y verificar que `npm run build` compila
+- [ ] 2.3 Sustituir en `apps/web` los usos de `MAX_TITLE_LENGTH` y del tipo `Task` por los del paquete compartido, y verificar que `npm run build` y `npx oxlint` pasan y que la app sigue funcionando con `npm run dev`
+
+## 3. API: esqueleto y base de datos
+
+- [ ] 3.1 Crear `apps/api` con `express`, `cors`, `zod`, `tsx` y TypeScript, un servidor mínimo que escuche en el puerto de `PORT` (con valor por defecto para desarrollo), y verificar que `npm run dev -w apps/api` arranca y responde
+- [ ] 3.2 Añadir `.env.example` con `DATABASE_URL`, `PORT` y `CORS_ORIGINS`, confirmar que `.env` está en `.gitignore`, y verificar con `git status` que ningún archivo `.env` real aparece como rastreado
+- [ ] 3.3 Instalar Prisma en `apps/api` y definir el modelo `Task` (`id` uuid generado por la base de datos, `title`, `done` con valor por defecto `false`, `createdAt`), y verificar que `npx prisma validate` pasa
+- [ ] 3.4 **[manual]** Aprovisionar una base de datos PostgreSQL gestionada (Neon) bajo la cuenta `ragudc514@gmail.com`, poner su cadena de conexión en el `.env` local, y verificar la conexión ejecutando `npx prisma migrate dev --name init` y comprobando que la tabla existe con `npx prisma studio`
+- [ ] 3.5 Confirmar que el directorio `prisma/migrations/` queda versionado en el repositorio, y verificar con `git status` que el archivo de migración aparece para commit (las migraciones son artefactos del repo, no del entorno — `design.md`)
+
+## 4. API: operaciones sobre tareas
+
+> Cubre la capacidad `task-api`. Cada tarea se verifica contra los escenarios del
+> spec con peticiones reales (`curl` o el cliente HTTP del editor).
+
+- [ ] 4.1 Implementar el middleware de manejo de errores con forma uniforme (código y mensaje en español) y los códigos HTTP 400 / 404 / 500, y verificar que una ruta inexistente y un cuerpo JSON malformado devuelven esa forma y no una traza de error
+- [ ] 4.2 Implementar la lectura de la lista de tareas ordenada por `createdAt` ascendente con `id` como desempate, y verificar que devuelve éxito y una colección vacía cuando no hay tareas, y las tareas en orden de creación cuando las hay
+- [ ] 4.3 Implementar la creación de tarea con validación del esquema compartido, `id` asignado por la base de datos y `done` en `false`, y verificar los cuatro escenarios del spec: creación exitosa devuelve código de recurso creado, título vacío o solo espacios devuelve 400 sin almacenar, título de más de 200 caracteres devuelve 400, y un `id` enviado por el cliente se ignora
+- [ ] 4.4 Implementar la actualización parcial de tarea (título, `done`, o ambos; el campo ausente conserva su valor), y verificar los cuatro escenarios del spec, incluido que actualizar un `id` inexistente devuelve 404 sin crear nada
+- [ ] 4.5 Implementar la eliminación de tarea, y verificar que tras eliminar con éxito la tarea no aparece en una lectura posterior, y que eliminar un `id` inexistente devuelve 404
+- [ ] 4.6 Implementar la operación de comprobación de disponibilidad que verifique el acceso al almacenamiento, y verificar que responde con éxito con la base de datos accesible y con error al apuntar `DATABASE_URL` a una base inalcanzable
+- [ ] 4.7 Configurar CORS con lista blanca leída de `CORS_ORIGINS` (nunca comodín), y verificar que una petición con un `Origin` declarado recibe la cabecera de autorización y una con un `Origin` no declarado no la recibe
+- [ ] 4.8 Verificar que las tareas sobreviven al reinicio del servicio: crear varias tareas, detener y volver a arrancar `npm run dev -w apps/api`, y comprobar que la lectura devuelve las mismas tareas en el mismo orden
+- [ ] 4.9 Verificar que `npm run build` y `npx oxlint` pasan sobre `apps/api` desde la raíz
+
+## 5. Conectar la aplicación web al API
+
+> Cubre el delta de `todo-list`. Aquí cambia el comportamiento observable.
+
+- [ ] 5.1 Crear el cliente HTTP en `apps/web/src/api.ts` con las cinco operaciones, leyendo la dirección base de `VITE_API_URL`, traduciendo las respuestas de error a un error con el mensaje del servidor, y verificar que `npm run build` compila; añadir `.env.local` apuntando al servicio local y confirmar que está en `.gitignore`
+- [ ] 5.2 Sustituir el estado `Task[]` de `App.tsx` por la unión discriminada de tres formas (cargando, error, lista) y cargar las tareas del API al montar, y verificar que `npm run build` compila y que al abrir la app con el API corriendo se muestran las tareas almacenadas
+- [ ] 5.3 Convertir `commitTasks` en asíncrono conservando su rol de único punto de escritura —ejecuta la operación contra el API y solo con la respuesta exitosa fija el estado y emite el anuncio—, y verificar que no queda ninguna llamada al API fuera de esa función (`grep` sobre `apps/web/src`)
+- [ ] 5.4 Conectar crear, completar, editar y eliminar a sus operaciones del API, y verificar manualmente con `npm run dev` que cada una se refleja de inmediato sin recargar la página y que tras recargar manualmente el cambio sigue ahí
+- [ ] 5.5 Eliminar `apps/web/src/storage.ts` junto con `createTaskId()`, y verificar con `grep -r localStorage apps/web/src` que no queda ninguna referencia, y en el navegador que la aplicación no escribe nada bajo la clave `todo-list:tasks`
+- [ ] 5.6 Implementar el estado de carga inicial con su anuncio por la región `aria-live` existente, y verificar los cuatro escenarios del spec: carga en curso no muestra el estado vacío, carga terminada con tareas muestra la lista, carga terminada sin tareas muestra el estado vacío, y una espera prolongada (simulada con throttling en DevTools) mantiene el estado de carga sin degradar a error
+- [ ] 5.7 Implementar el estado de fallo de carga con su control de reintentar, y verificar los tres escenarios del spec deteniendo el API: aparece el mensaje de error y no el estado vacío, el reintento con el API arriba muestra la lista, y el reintento con el API abajo conserva el error y el control
+- [ ] 5.8 Implementar el manejo de fallo al guardar un cambio —mensaje de error, lista conservando el estado real del servidor, y anuncio que no afirma que la acción se realizó—, y verificar los cuatro escenarios del spec deteniendo el API y probando crear, completar, editar y eliminar
+- [ ] 5.9 Implementar el registro de acciones en curso por `id` de tarea con indicación visual y bloqueo de la misma acción, y verificar los tres escenarios del spec: el control indica la acción en curso, un doble click rápido ejecuta la acción una sola vez, y el resto de la interfaz (incluido el control de tema) sigue usable durante la espera
+- [ ] 5.10 Verificar por cálculo el contraste de todo color nuevo introducido por los estados de carga y error, en tema claro y oscuro, contra el piso de `PRODUCT.md` (texto ≥ 4.5:1, indicadores y controles ≥ 3:1), confirmando que todos salen de tokens de `index.css` y no hay ningún color literal en los componentes
+- [ ] 5.11 Verificar el recorrido completo por teclado de la interfaz nueva: el control de reintentar es alcanzable y activable, un control deshabilitado por acción en curso conserva su nombre accesible y no se pierde el foco, y el foco nunca cae al `<body>`
+- [ ] 5.12 Verificar bajo `prefers-reduced-motion` que cualquier indicador de acción en curso conserva la señal de estado con una alternativa, sin `animation: none` (`CLAUDE.md` — Accesibilidad)
+- [ ] 5.13 Verificar manualmente a ~375px, ~768px y ~1280px de ancho que los mensajes de carga y error no producen scroll horizontal ni desplazan los controles fuera de las cards
+
+## 6. Sincronizar las tres autoridades con la arquitectura nueva
+
+- [ ] 6.1 Actualizar `PRODUCT.md`: sustituir la restricción vinculante "Sin backend" por la arquitectura nueva y sus restricciones reales (lista única sin cuentas, accesible por quien tenga la dirección, sin datos reales), y actualizar la lista de capacidades confirmadas y los comandos de Operating Context
+- [ ] 6.2 Actualizar `CLAUDE.md`: comandos de workspaces, la sección de arquitectura (el dueño único del estado ahora escribe contra el API, no contra `localStorage`), la estructura de carpetas y las rutas `@source` de Tailwind, y verificar que ninguna instrucción del archivo describe código que ya no existe
+- [ ] 6.3 Añadir al `README.md` las instrucciones de puesta en marcha local: variables de entorno requeridas, `npm install`, migración de base de datos y arranque de ambos workspaces, y verificar siguiéndolas desde cero en una copia limpia del repositorio
+
+## 7. Publicar en remoto
+
+- [ ] 7.1 **[manual]** Crear el repositorio remoto bajo la cuenta `ragudc1984`, empujar el trabajo, renombrar la rama principal a `main`, y verificar que el repositorio remoto muestra el historial completo
+- [ ] 7.2 **[manual]** Crear el servicio web del API en Render conectado al repositorio, configurar `DATABASE_URL`, `PORT` y `CORS_ORIGINS` como variables del servicio, y el comando de pre-deploy `npx prisma migrate deploy`, y verificar que la comprobación de disponibilidad responde con éxito en la URL pública
+- [ ] 7.3 Configurar `base` en `vite.config.ts` a partir de una variable de entorno para que la app funcione tanto en la raíz en desarrollo como bajo la ruta del repositorio en GitHub Pages, y verificar con `npm run preview` que los assets cargan bajo esa ruta base
+- [ ] 7.4 **[manual]** Habilitar GitHub Pages en el repositorio con origen en GitHub Actions, y verificar que la configuración queda activa
+- [ ] 7.5 **[manual]** Verificar el sistema publicado de punta a punta desde otro dispositivo: crear, completar, editar y eliminar una tarea contra el API remoto, recargar y confirmar que los cambios siguen ahí
+- [ ] 7.6 **[manual]** Verificar el escenario de servicio suspendido: dejar el API dormir por inactividad, abrir la web publicada, y confirmar que el estado de carga se mantiene comprensible durante toda la espera sin mostrar error ni lista vacía
+
+## 8. Integración continua
+
+> Cubre la capacidad `continuous-delivery`.
+
+- [ ] 8.1 Crear `.github/workflows/ci.yml` que se dispare en pull request contra la rama principal, instale dependencias con caché, y ejecute lint y build de todos los workspaces, y verificar que el archivo es YAML válido
+- [ ] 8.2 Verificar el escenario de cambio exitoso: abrir un pull request con un cambio que pasa lint y compila, y confirmar que la ejecución se reporta exitosa en el pull request
+- [ ] 8.3 Verificar el escenario de compilación rota: abrir un pull request con un error de tipos deliberado, confirmar que la ejecución falla indicando qué comprobación falló, y revertir el error
+- [ ] 8.4 Verificar el escenario de violación de lint: abrir un pull request con una infracción deliberada de oxlint, confirmar que la ejecución falla, y revertir la infracción
+
+## 9. Entrega continua
+
+- [ ] 9.1 Crear `.github/workflows/deploy.yml` que se dispare en push a la rama principal, repita lint y build, construya `apps/web` con `VITE_API_URL` apuntando al API publicado, publique el resultado en GitHub Pages, y dispare el deploy hook de Render para el API, y verificar que el archivo es YAML válido
+- [ ] 9.2 **[manual]** Registrar el deploy hook de Render y la dirección pública del API como secreto y variable del repositorio respectivamente, y verificar que ningún valor aparece en archivos versionados con `git grep` sobre las cadenas involucradas
+- [ ] 9.3 Verificar el escenario de publicación exitosa: integrar un cambio visible en la rama principal y confirmar que la web publicada y el API reflejan ese cambio sin que nadie ejecute nada manualmente
+- [ ] 9.4 Verificar el escenario de que no se publica lo que no compila: integrar un cambio que rompe la compilación, confirmar que no se publicó nada y que la versión publicada anteriormente sigue accesible, y revertir
+- [ ] 9.5 Verificar el escenario de migración aplicada antes de servir: integrar un cambio que incluya una migración de esquema y confirmar en los registros de Render que la migración se aplicó antes de que la versión nueva atendiera solicitudes
+- [ ] 9.6 Verificar que los registros de la primera ejecución de publicación no imprimen el valor de ningún secreto
+- [ ] 9.7 **[manual]** Configurar la protección de la rama principal en GitHub exigiendo que las comprobaciones de integración continua sean exitosas antes de integrar, y verificar el escenario del spec intentando integrar un pull request con comprobaciones fallidas y confirmando que GitHub lo impide
+
+## 10. Verificación final del cambio
+
+- [ ] 10.1 Verificar el flujo completo contra el sistema publicado: abrir la web desde dos navegadores distintos, crear tareas en uno, recargar en el otro, y confirmar que ambos ven las mismas tareas con el mismo contenido y orden
+- [ ] 10.2 Confirmar que el tema sigue cargando siempre en claro y sin recordarse entre recargas, verificando que la arquitectura nueva no reabrió ese non-goal
+- [ ] 10.3 Verificar que `npm run build` y `npx oxlint` pasan desde la raíz sobre el repositorio completo
+- [ ] 10.4 Revisar que el tamaño del CSS construido no creció de forma inesperada respecto al estado previo; si creció sin haber tocado estilos, buscar palabras como "visible" o "blur" escritas en comentarios de archivos escaneados por Tailwind (`CLAUDE.md` — Gotchas)

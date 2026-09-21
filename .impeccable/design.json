@@ -1,0 +1,599 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-19T19:43:57.758547-05:00",
+  "title": "Design System: Capacitación IDR Consulting",
+  "extensions": {
+    "colorMeta": {
+      "cyan": {
+        "role": "primary",
+        "displayName": "Verde Señal",
+        "canonical": "oklch(49.9% 0.088 181.2)",
+        "tonalRamp": [
+          "#00110c",
+          "#002e27",
+          "#004e44",
+          "#167064",
+          "#419385",
+          "#6fb4a8",
+          "#9cd7cb",
+          "#c9fbf0"
+        ]
+      },
+      "violet": {
+        "role": "secondary",
+        "displayName": "Violeta Trabajo",
+        "canonical": "oklch(54.0% 0.211 283.6)",
+        "tonalRamp": [
+          "#0e003d",
+          "#240369",
+          "#3d2699",
+          "#5a44cb",
+          "#7869f3",
+          "#9992ff",
+          "#bdbbff",
+          "#e3e3ff"
+        ]
+      },
+      "magenta": {
+        "role": "tertiary",
+        "displayName": "Magenta Corte",
+        "canonical": "oklch(54.1% 0.230 344.8)",
+        "tonalRamp": [
+          "#2a0018",
+          "#530037",
+          "#7e0059",
+          "#ac007d",
+          "#d537a0",
+          "#f46cc0",
+          "#ff9be2",
+          "#ffc8ff"
+        ]
+      },
+      "bg": {
+        "role": "neutral",
+        "displayName": "Lienzo",
+        "canonical": "oklch(97.7% 0.005 275.0)",
+        "tonalRamp": [
+          "#0b0b0d",
+          "#242527",
+          "#414244",
+          "#606164",
+          "#818285",
+          "#a4a5a8",
+          "#c8c9cc",
+          "#eeeef1"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Superficie",
+        "canonical": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(84.0% 0.013 276.1)",
+        "tonalRamp": [
+          "#0a0b0e",
+          "#24252a",
+          "#404248",
+          "#5f6168",
+          "#80828a",
+          "#a3a5ac",
+          "#c7c9cf",
+          "#edeef4"
+        ]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Texto",
+        "canonical": "oklch(19.6% 0.015 266.8)",
+        "tonalRamp": [
+          "#090b0f",
+          "#23252a",
+          "#3f4249",
+          "#5d616a",
+          "#7e828b",
+          "#a1a5ad",
+          "#c6c9d0",
+          "#eceef5"
+        ]
+      },
+      "text-muted": {
+        "role": "neutral",
+        "displayName": "Texto atenuado",
+        "canonical": "oklch(52.6% 0.026 260.7)",
+        "tonalRamp": [
+          "#080b12",
+          "#20252e",
+          "#3b424e",
+          "#596270",
+          "#7a8392",
+          "#9da6b3",
+          "#c2cad6",
+          "#e9eff9"
+        ]
+      },
+      "cyan-dark": {
+        "role": "primary",
+        "displayName": "Verde Señal (oscuro)",
+        "canonical": "oklch(87.4% 0.139 180.1)",
+        "tonalRamp": [
+          "#00140d",
+          "#003327",
+          "#005444",
+          "#007864",
+          "#009b85",
+          "#3abca8",
+          "#7adfcc",
+          "#affff1"
+        ]
+      },
+      "violet-dark": {
+        "role": "secondary",
+        "displayName": "Violeta Trabajo (oscuro)",
+        "canonical": "oklch(70.1% 0.166 287.2)",
+        "tonalRamp": [
+          "#0d0031",
+          "#25135a",
+          "#412f85",
+          "#5f4db3",
+          "#7e70da",
+          "#a096f6",
+          "#c4bdff",
+          "#eae5ff"
+        ]
+      },
+      "magenta-dark": {
+        "role": "tertiary",
+        "displayName": "Magenta Corte (oscuro)",
+        "canonical": "oklch(72.6% 0.241 337.5)",
+        "tonalRamp": [
+          "#28001f",
+          "#500041",
+          "#7b0066",
+          "#a9008d",
+          "#d035b1",
+          "#f06bd1",
+          "#ff9af1",
+          "#ffc8ff"
+        ]
+      },
+      "bg-dark": {
+        "role": "neutral",
+        "displayName": "Lienzo (oscuro)",
+        "canonical": "oklch(15.4% 0.014 263.9)",
+        "tonalRamp": [
+          "#090b0f",
+          "#23252a",
+          "#3f4248",
+          "#5d6169",
+          "#7e828a",
+          "#a1a5ac",
+          "#c6c9d0",
+          "#eceef4"
+        ]
+      },
+      "surface-dark": {
+        "role": "neutral",
+        "displayName": "Superficie (oscuro)",
+        "canonical": "oklch(19.2% 0.019 266.0)",
+        "tonalRamp": [
+          "#090b10",
+          "#22252c",
+          "#3e424b",
+          "#5c616c",
+          "#7d828e",
+          "#a0a5af",
+          "#c5c9d2",
+          "#ebeef7"
+        ]
+      },
+      "border-dark": {
+        "role": "neutral",
+        "displayName": "Hairline (oscuro)",
+        "canonical": "oklch(32.0% 0.019 264.3)",
+        "tonalRamp": [
+          "#090b10",
+          "#22252c",
+          "#3e424b",
+          "#5c616c",
+          "#7d828e",
+          "#a0a5af",
+          "#c5c9d2",
+          "#ebeff6"
+        ]
+      },
+      "text-dark": {
+        "role": "neutral",
+        "displayName": "Texto (oscuro)",
+        "canonical": "oklch(94.6% 0.013 266.7)",
+        "tonalRamp": [
+          "#0a0b0e",
+          "#23252a",
+          "#3f4248",
+          "#5e6168",
+          "#7f828a",
+          "#a2a5ac",
+          "#c6c9cf",
+          "#eceef4"
+        ]
+      },
+      "text-muted-dark": {
+        "role": "neutral",
+        "displayName": "Texto atenuado (oscuro)",
+        "canonical": "oklch(61.9% 0.034 265.2)",
+        "tonalRamp": [
+          "#070b14",
+          "#1f2531",
+          "#3b4251",
+          "#586174",
+          "#798296",
+          "#9ca5b7",
+          "#c1c9da",
+          "#e8effd"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Papel",
+        "canonical": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Tinta",
+        "canonical": "oklch(0.0% 0.000 0.0)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Tinta atenuada",
+        "canonical": "oklch(38.7% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "border-print": {
+        "role": "neutral",
+        "displayName": "Hairline impreso",
+        "canonical": "oklch(68.3% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Exclusivamente el h1 de la página. Space Grotesk no aparece en ningún otro lugar."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Títulos de tarea, texto del diálogo y ambos campos. Mínimo 1rem: por debajo, iOS fuerza zoom al enfocar."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Contador del encabezado, errores, contador de caracteres y título de tarea dentro del diálogo."
+      }
+    },
+    "shadows": [
+      {
+        "name": "glow-cyan-sm",
+        "value": "0 0 12px var(--cyan-glow)",
+        "purpose": "Hover de los controles de fila en el acento de crear y completar."
+      },
+      {
+        "name": "glow-violet-sm",
+        "value": "0 0 12px var(--violet-glow)",
+        "purpose": "Hover de editar y de cancelar."
+      },
+      {
+        "name": "glow-violet-md",
+        "value": "0 0 14px var(--violet-glow)",
+        "purpose": "Hover del toggle de tema."
+      },
+      {
+        "name": "glow-magenta-sm",
+        "value": "0 0 12px var(--magenta-glow)",
+        "purpose": "Hover de eliminar."
+      },
+      {
+        "name": "glow-cyan-lg",
+        "value": "0 0 18px var(--cyan-glow)",
+        "purpose": "Hover del botón primario relleno."
+      },
+      {
+        "name": "glow-magenta-lg",
+        "value": "0 0 18px var(--magenta-glow)",
+        "purpose": "Hover del botón destructivo relleno."
+      },
+      {
+        "name": "underline-focus",
+        "value": "0 1px 0 0 var(--ring-cyan)",
+        "purpose": "Engrosa a 2px el subrayado del campo enfocado. Opaco, no glow."
+      },
+      {
+        "name": "elevation-dialog",
+        "value": "0 18px 48px -12px rgba(18,21,28,0.35)",
+        "purpose": "Única sombra con desplazamiento real del sistema. Sólo el diálogo."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Easing por defecto de todas las transiciones de estado."
+      },
+      {
+        "name": "duration-state",
+        "value": "150ms",
+        "purpose": "Transición por defecto de color y sombra en hover y foco."
+      },
+      {
+        "name": "duration-reveal",
+        "value": "200ms",
+        "purpose": "Aparición de la barra de acento de la fila."
+      },
+      {
+        "name": "task-in",
+        "value": "200ms cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "Entrada de una tarea nueva: fundido y translateY(6px) hacia arriba, porque la tarea se añade al final de la lista. Sólo opacity y transform."
+      },
+      {
+        "name": "task-glow",
+        "value": "200ms ease-out",
+        "purpose": "Destello del halo al crear una tarea, sobre un ::after con box-shadow fijo y opacidad animada. Animar box-shadow obliga a repintar en cada fotograma."
+      },
+      {
+        "name": "task-in-reduced",
+        "value": "200ms ease-out",
+        "purpose": "Alternativa bajo prefers-reduced-motion: sólo opacidad, y el halo no se anima. Conserva la señal de aparición y el evento animationend del que depende la limpieza de estado."
+      },
+      {
+        "name": "duration-reduced",
+        "value": "120ms",
+        "purpose": "Transiciones acortadas bajo prefers-reduced-motion, no eliminadas."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "40rem"
+      },
+      {
+        "name": "touch",
+        "value": "(pointer: coarse)"
+      },
+      {
+        "name": "landscape-short",
+        "value": "(max-height: 34rem) and (orientation: landscape)"
+      },
+      {
+        "name": "forced-colors",
+        "value": "(forced-colors: active)"
+      },
+      {
+        "name": "reduced-motion",
+        "value": "(prefers-reduced-motion: reduce)"
+      },
+      {
+        "name": "print",
+        "value": "print",
+        "purpose": "Tercer tema: remapea los roles de color a tinta sobre papel, oculta todo lo interactivo y quita el padding del shell."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón primario (agregar)",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Círculo relleno en Verde Señal. Única acción de creación de la superficie.",
+      "html": "<button class=\"ds-btn-primary\" aria-label=\"Agregar tarea\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2.25\"><path d=\"M5 12h14M12 5v14\"/></svg></button>",
+      "css": ".ds-btn-primary{font-family:Inter,ui-sans-serif,system-ui,sans-serif;border:none;cursor:pointer;transition:color .15s cubic-bezier(.4,0,.2,1),box-shadow .15s cubic-bezier(.4,0,.2,1),background-color .15s cubic-bezier(.4,0,.2,1);outline:2px solid transparent;outline-offset:2px;display:inline-flex;align-items:center;justify-content:center;width:2.5rem;height:2.5rem;border-radius:9999px;background:var(--cyan,#0a7366);color:var(--bg,#f6f7fb);}.ds-btn-primary:hover{box-shadow:0 0 18px var(--cyan-glow,rgba(10,115,102,.28));}.ds-btn-primary:focus-visible{outline-color:var(--ring-cyan,#0a7366);}@media (pointer:coarse){.ds-btn-primary{min-width:2.75rem;min-height:2.75rem;}}"
+    },
+    {
+      "name": "Botón destructivo",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Confirma un borrado. Nombra la acción; nunca dice Aceptar.",
+      "html": "<button class=\"ds-btn-danger\">Eliminar</button>",
+      "css": ".ds-btn-danger{font-family:Inter,ui-sans-serif,system-ui,sans-serif;border:none;cursor:pointer;transition:color .15s cubic-bezier(.4,0,.2,1),box-shadow .15s cubic-bezier(.4,0,.2,1),background-color .15s cubic-bezier(.4,0,.2,1);outline:2px solid transparent;outline-offset:2px;display:inline-flex;align-items:center;justify-content:center;padding:.5rem 1rem;border-radius:9999px;background:var(--magenta,#c1008d);color:var(--bg,#f6f7fb);font-weight:500;font-size:1rem;}.ds-btn-danger:hover{box-shadow:0 0 18px var(--magenta-glow,rgba(193,0,141,.28));}.ds-btn-danger:focus-visible{outline-color:var(--ring-magenta,#c1008d);}@media (pointer:coarse){.ds-btn-danger{min-height:2.75rem;}}"
+    },
+    {
+      "name": "Botón fantasma",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Acción secundaria del diálogo. Sin relleno ni borde.",
+      "html": "<button class=\"ds-btn-ghost\">Cancelar</button>",
+      "css": ".ds-btn-ghost{font-family:Inter,ui-sans-serif,system-ui,sans-serif;border:none;cursor:pointer;transition:color .15s cubic-bezier(.4,0,.2,1),box-shadow .15s cubic-bezier(.4,0,.2,1),background-color .15s cubic-bezier(.4,0,.2,1);outline:2px solid transparent;outline-offset:2px;display:inline-flex;align-items:center;justify-content:center;padding:.5rem 1rem;border-radius:9999px;background:transparent;color:var(--text-muted,#626b7a);font-size:1rem;}.ds-btn-ghost:hover{color:var(--violet,#6650e2);box-shadow:0 0 12px var(--violet-glow,rgba(102,80,226,.28));}.ds-btn-ghost:focus-visible{outline-color:var(--ring-violet,#6650e2);}@media (pointer:coarse){.ds-btn-ghost{min-height:2.75rem;}}"
+    },
+    {
+      "name": "Botón de ícono (completar)",
+      "kind": "button",
+      "refersTo": "button-icon-active",
+      "description": "Alternancia con estado persistente: Verde Señal cuando la tarea está hecha. Etiqueta estática más aria-pressed.",
+      "html": "<button class=\"ds-btn-icon ds-btn-icon--on\" aria-pressed=\"true\" aria-label=\"Completar tarea: Revisar el informe mensual\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"><path d=\"M20 6 9 17l-5-5\"/></svg></button>",
+      "css": ".ds-btn-icon{font-family:Inter,ui-sans-serif,system-ui,sans-serif;border:none;cursor:pointer;transition:color .15s cubic-bezier(.4,0,.2,1),box-shadow .15s cubic-bezier(.4,0,.2,1),background-color .15s cubic-bezier(.4,0,.2,1);outline:2px solid transparent;outline-offset:2px;display:inline-flex;align-items:center;justify-content:center;padding:.375rem;border-radius:9999px;background:transparent;color:var(--text-muted,#626b7a);}.ds-btn-icon--on{color:var(--cyan,#0a7366);}.ds-btn-icon:hover{color:var(--cyan,#0a7366);box-shadow:0 0 12px var(--cyan-glow,rgba(10,115,102,.28));}.ds-btn-icon:focus-visible{outline-color:var(--ring-cyan,#0a7366);}@media (pointer:coarse){.ds-btn-icon{min-width:2.75rem;min-height:2.75rem;}}"
+    },
+    {
+      "name": "Campo subrayado",
+      "kind": "input",
+      "refersTo": "input-underline",
+      "description": "Sin caja: una línea. El foco la engrosa a 2px y la tiñe de Verde Señal.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Ej.: Revisar el informe mensual\" aria-label=\"Título de la tarea\">",
+      "css": ".ds-input{font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-size:1rem;width:100%;min-width:0;padding:.5rem .125rem;background:transparent;color:var(--text,#12151c);border:0;border-bottom:1px solid var(--border,#c8cad3);outline:2px solid transparent;outline-offset:2px;caret-color:var(--cyan,#0a7366);transition:border-color .15s cubic-bezier(.4,0,.2,1),box-shadow .15s cubic-bezier(.4,0,.2,1);}.ds-input::placeholder{color:var(--text-muted,#626b7a);}.ds-input:focus{border-color:var(--ring-cyan,#0a7366);box-shadow:0 1px 0 0 var(--ring-cyan,#0a7366);}"
+    },
+    {
+      "name": "Fila de tarea",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "El componente que define el sistema: hairline en lugar de tarjeta, y una barra de acento que sólo aparece con hover o con el foco dentro.",
+      "html": "<li class=\"ds-row\"><span class=\"ds-row__bar\" aria-hidden=\"true\"></span><span class=\"ds-row__title\">Revisar el informe mensual</span><button class=\"ds-btn-icon\" aria-label=\"Completar tarea\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"><path d=\"M20 6 9 17l-5-5\"/></svg></button><button class=\"ds-btn-icon ds-btn-icon--edit\" aria-label=\"Editar tarea\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"><path d=\"M21.2 6.8a1 1 0 0 0-4-4L3.8 16.2a2 2 0 0 0-.5.8l-1.3 4.4a.5.5 0 0 0 .6.6l4.4-1.3a2 2 0 0 0 .8-.5z\"/></svg></button><button class=\"ds-btn-icon ds-btn-icon--del\" aria-label=\"Eliminar tarea\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"><path d=\"M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2\"/></svg></button></li>",
+      "css": ".ds-row{position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:.75rem;padding:.75rem 0 .75rem .75rem;border-bottom:1px solid var(--border,#c8cad3);list-style:none;font-family:Inter,ui-sans-serif,system-ui,sans-serif;}.ds-row__bar{position:absolute;left:0;top:0;height:100%;width:2px;background:var(--cyan,#0a7366);opacity:0;transition:opacity .2s cubic-bezier(.4,0,.2,1);}.ds-row:hover .ds-row__bar,.ds-row:focus-within .ds-row__bar{opacity:1;}.ds-row__title{flex:1;min-width:0;text-align:left;color:var(--text,#12151c);font-size:1rem;overflow-wrap:anywhere;}.ds-btn-icon--edit:hover{color:var(--violet,#6650e2);box-shadow:0 0 12px var(--violet-glow,rgba(102,80,226,.28));}.ds-btn-icon--edit:focus-visible{outline-color:var(--ring-violet,#6650e2);}.ds-btn-icon--del:hover{color:var(--magenta,#c1008d);box-shadow:0 0 12px var(--magenta-glow,rgba(193,0,141,.28));}.ds-btn-icon--del:focus-visible{outline-color:var(--ring-magenta,#c1008d);}"
+    },
+    {
+      "name": "Diálogo de confirmación",
+      "kind": "card",
+      "refersTo": "surface-dialog",
+      "description": "La única superficie elevada del sistema, y la única con sombra de desplazamiento real.",
+      "html": "<div class=\"ds-dialog\" role=\"dialog\" aria-modal=\"true\"><h2 class=\"ds-dialog__title\">¿Eliminar esta tarea?</h2><p class=\"ds-dialog__target\">Revisar el informe mensual</p><div class=\"ds-dialog__actions\"><button class=\"ds-btn-ghost\">Cancelar</button><button class=\"ds-btn-danger\">Eliminar</button></div></div>",
+      "css": ".ds-dialog{font-family:Inter,ui-sans-serif,system-ui,sans-serif;width:100%;max-width:24rem;padding:1.5rem;border-radius:.5rem;border:1px solid var(--border,#c8cad3);background:var(--surface,#ffffff);box-shadow:var(--shadow-modal,0 18px 48px -12px rgba(18,21,28,.35));}.ds-dialog__title{margin:0;font-size:1rem;font-weight:400;color:var(--text,#12151c);}.ds-dialog__target{margin:.5rem 0 0;font-size:.875rem;color:var(--text-muted,#626b7a);overflow-wrap:anywhere;}.ds-dialog__actions{display:flex;justify-content:flex-end;gap:.75rem;margin-top:1.5rem;}"
+    },
+    {
+      "name": "Estado vacío",
+      "kind": "card",
+      "refersTo": null,
+      "description": "Mismo radio que el diálogo, tratamiento invertido: sin relleno y con borde punteado.",
+      "html": "<div class=\"ds-empty\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.75\" aria-hidden=\"true\"><path d=\"M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z\"/></svg><p class=\"ds-empty__title\">Todavía no hay tareas.</p><p class=\"ds-empty__hint\">Agrega la primera arriba para empezar.</p></div>",
+      "css": ".ds-empty{font-family:Inter,ui-sans-serif,system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:2.5rem 1.5rem;text-align:center;border:1px dashed var(--border,#c8cad3);border-radius:.5rem;color:var(--violet,#6650e2);}.ds-empty__title{margin:0;color:var(--text,#12151c);font-size:1rem;}.ds-empty__hint{margin:0;color:var(--text-muted,#626b7a);font-size:.875rem;}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Tinta y Neón",
+    "overview": "Este sistema tiene tres temas, y los dos de pantalla obedecen a físicas distintas. En el tema oscuro el color es luz: tres acentos de neón encendidos sobre un negro azulado, donde el cian encabeza la jerarquía por puro brillo. En el tema claro el color es tinta: los mismos tres acentos bajan a una banda estrecha de lightness y el cian vuelve a encabezar, ahora por densidad, siendo el más oscuro de los tres. La jerarquía es idéntica; sólo cambia el medio que la expresa. El tercero, impresión, no compite: renuncia al color entero y se queda con la estructura.\n\nEsa dualidad no es decorativa, es la lección central del sistema. El tema claro nació mal —derivado del oscuro restando brillo— y eso dejó el botón primario a 1.96:1. Componerlo desde cero, para su propio medio, fue lo que lo arregló. Cualquier trabajo futuro que trate un tema como una variante mecánica del otro repetirá el mismo defecto.\n\nLa superficie es austera y sin cajas: separadores de un píxel en lugar de tarjetas, una sola columna estrecha, y una cara de display reservada exclusivamente para el título de la página. Toda la expresión vive en tres acentos aplicados con disciplina semántica estricta y en un halo de color que sólo aparece cuando el usuario toca algo. Nada aquí se adorna; la personalidad está en la precisión.",
+    "keyCharacteristics": [
+      "Tres temas; los dos de pantalla compuestos por separado, nunca invertidos uno del otro",
+      "Tres acentos con significado fijo, jamás intercambiables",
+      "Sin tarjetas: la estructura la llevan hairlines de 1px",
+      "Plano en reposo; el color sólo se enciende como respuesta a un estado",
+      "Todo valor de contraste está medido, no estimado"
+    ],
+    "rules": [
+      {
+        "name": "La Regla del Significado Fijo",
+        "body": "Cada acento tiene un único trabajo en toda la aplicación: cian crea y completa, violeta edita, magenta destruye. Un control nuevo no elige color por estética; lo hereda de lo que hace. No existe un cuarto acento.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de la Doble Composición",
+        "body": "Ningún tema se deriva del otro. Un valor claro nuevo se compone contra #f6f7fb y se mide; un valor oscuro se compone contra #090c12 y se mide. Restar o sumar brillo al gemelo es el error que este sistema ya cometió una vez.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla del Color Nunca Solo",
+        "body": "El color jamás es el único portador de significado. Cada acción tiene además ícono, posición fija en la fila y nombre accesible; una tarea completada lleva tachado además del cian.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de los Tres Temas",
+        "body": "Claro, oscuro e impresión son tres temas, no dos más una hoja de estilos. Un rol de color nuevo tiene que tener respuesta en los tres, y la de impresión casi siempre es \"desaparece o se vuelve tinta\".",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla del Número Medido",
+        "body": "Todo par de color se verifica por cálculo antes de entrar: texto mayor o igual a 4.5:1, controles e indicadores mayor o igual a 3:1, en los tres temas. A ojo no cuenta.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de la Voz Única",
+        "body": "Space Grotesk aparece una vez por pantalla, en el h1. Si un elemento nuevo pide la cara de display, casi siempre lo que pide en realidad es más peso o más espacio.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla de los 16 Píxeles",
+        "body": "Ningún campo de entrada baja de 1rem. No es una preferencia tipográfica: es una restricción de iOS.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla del Puntero, No del Ancho",
+        "body": "Un objetivo táctil crece porque el dispositivo se toca con el dedo (pointer: coarse, mínimo 2.75rem), nunca porque la pantalla sea estrecha.",
+        "section": "layout"
+      },
+      {
+        "name": "La Regla de la Columna Única",
+        "body": "No hay rejilla multicolumna en ningún tamaño. En escritorio el espacio sobrante es margen, no una segunda columna.",
+        "section": "layout"
+      },
+      {
+        "name": "La Regla del Plano en Reposo",
+        "body": "Ninguna superficie lleva sombra en su estado normal. El halo es una respuesta, no una textura.",
+        "section": "elevation"
+      },
+      {
+        "name": "La Regla del Foco Nunca Brilla",
+        "body": "El halo es para hover; el foco usa outline sólido de 2px con un token opaco. El halo translúcido medía 1.24:1 y era invisible, y box-shadow no se pinta en el modo de alto contraste de Windows, donde outline sí.",
+        "section": "elevation"
+      },
+      {
+        "name": "La Regla de las Dos Formas",
+        "body": "Redondo si se pulsa, 0.5rem si contiene, línea si se escribe. No hay una tercera opción.",
+        "section": "shapes"
+      },
+      {
+        "name": "La Regla de la Ausencia de Tarjeta",
+        "body": "Las tareas no viven en tarjetas. Una fila se separa de la siguiente por un hairline y nada más.",
+        "section": "shapes"
+      },
+      {
+        "name": "La Regla del Presupuesto de 300 ms",
+        "body": "Ninguna animación de interfaz supera los 300ms, y la entrada de una tarea vive en 200ms porque crear es la acción más repetida de la aplicación. Sólo opacity y transform componen: el halo se anima por opacidad sobre un pseudo-elemento, nunca como box-shadow.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do componer cada tema contra su propio lienzo y medir el resultado. Texto 4.5:1, controles e indicadores 3:1, en claro, en oscuro y en papel.",
+      "Do heredar el color de un control nuevo de lo que hace: cian crea o completa, violeta edita, magenta destruye.",
+      "Do usar outline sólido para el foco, nunca box-shadow. Sobrevive al modo de alto contraste de Windows, donde el halo simplemente no se pinta.",
+      "Do hacer crecer los objetivos táctiles con pointer: coarse hasta 2.75rem, sin cambiar el tamaño del ícono.",
+      "Do dar a prefers-reduced-motion una alternativa que conserve el cambio de estado, no un apagado global.",
+      "Do acompañar todo color con ícono, posición o texto. El color nunca informa solo.",
+      "Do dar a cada rol de color una respuesta en los tres temas. En impresión, casi siempre es desaparecer o volverse tinta."
+    ],
+    "donts": [
+      "Don't derivar un tema del otro sumando o restando brillo. Es el defecto que dejó el botón primario a 1.96:1.",
+      "Don't poner halo en reposo. El glow es una respuesta a hover, no una textura del mundo.",
+      "Don't introducir un cuarto acento. Si un concepto nuevo pide color propio, casi siempre pertenece a una de las tres familias existentes.",
+      "Don't envolver las filas de tarea en tarjetas ni anidar contenedores. El hairline es toda la estructura que la lista necesita.",
+      "Don't usar Space Grotesk fuera del h1.",
+      "Don't bajar ningún campo de entrada de 1rem: iOS fuerza zoom al enfocar.",
+      "Don't escribir colores literales en los componentes. Todo pasa por token; hoy no queda ni uno suelto.",
+      "Don't redeclarar en body lo que el remapeo de tokens ya resuelve. El tema de impresión cambia los tokens; el resto se hereda solo.",
+      "Don't animar box-shadow, width, height ni propiedades de posición. Sólo opacity y transform componen.",
+      "Don't añadir un radio nuevo. Píldora si se pulsa, 0.5rem si contiene, línea si se escribe."
+    ]
+  }
+}
