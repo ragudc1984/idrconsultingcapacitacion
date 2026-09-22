@@ -181,7 +181,10 @@ commit (`verificar-main.yml`) y sólo entonces despliega. No hace falta ningún
 token en GitHub. La configuración del servicio (build, arranque, migración como
 *pre-deploy command* y chequeo de salud en `/salud`) vive en `railway.json`,
 versionada junto al código: un cambio de despliegue es un commit, no un clic en
-un panel.
+un panel. El `package.json` de la raíz tiene además un script `start` que
+arranca el API: sin él, Railpack (el sistema de build de Railway) no detecta un
+comando de arranque, toma el repositorio por un sitio estático —ve Vite en
+`apps/web`— y falla al preparar el build (hotfix 0.3.3).
 
 **La web se publica cuando Railway confirma que el API quedó arriba.** Railway
 informa a GitHub el estado de cada despliegue, y `publicar-web.yml` escucha el
