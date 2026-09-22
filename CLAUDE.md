@@ -109,10 +109,11 @@ cliente.
 ### Dónde se publica cada parte
 
 La web va a **GitHub Pages**, el API a **Railway** y la base es **Neon** (rama
-`production`; `desarrollo` para el `.env` local). Todo lo dispara
-`.github/workflows/deploy.yml` al integrar en `main`: verifica, despliega el API
-con `railway up` y espera a que el despliegue termine en `SUCCESS`, y **sólo
-entonces** publica la web. La configuración del servicio de Railway —build,
+`production`; `desarrollo` para el `.env` local). Al integrar en `main`,
+`verificar-main.yml` verifica; Railway, con *Wait for CI*, espera ese resultado y
+despliega el API; y cuando Railway informa a GitHub que el despliegue terminó
+bien (`deployment_status`), `publicar-web.yml` verifica y publica la web de ese
+mismo commit. Si el API falla, la web anterior sigue publicada. La configuración del servicio de Railway —build,
 arranque, migración como pre-deploy y chequeo de salud— está en `railway.json` y
 manda sobre el panel de Railway: se cambia con un commit, no con un clic.
 

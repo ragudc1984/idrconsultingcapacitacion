@@ -1,0 +1,33 @@
+# Verificacion de main: en cada push a main repite la puerta de verificacion.
+# No publica nada. Railway, con "Wait for CI" activado, espera a que este
+# workflow termine bien antes de desplegar el API; si falla, no despliega.
+# La web la publica publicar-web.yml cuando Railway avisa que el API quedo
+# arriba, asi que nunca sale una web apuntando a un API que no existe.
+name: verificar-main
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Construir
+        run: npm run build
+
+      - name: Lint
+        run: npm run lint

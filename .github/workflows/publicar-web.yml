@@ -1,0 +1,89 @@
+# Publicacion de la web: se dispara cuando Railway informa a GitHub que un
+# despliegue del API termino bien (evento deployment_status, estado success).
+# Construye y verifica la web del mismo commit que Railway desplego y la
+# publica en GitHub Pages. Si el despliegue del API falla, Railway no informa
+# success, este workflow no corre y la web anterior sigue publicada.
+#
+# Configuracion del repositorio (Settings > Secrets and variables > Actions):
+# - variable API_URL: direccion publica del API. No es secreta; queda escrita
+#   en el JavaScript de la web.
+#
+# El API lo despliega Railway desde main (integracion con GitHub y "Wait for
+# CI"). Su build, arranque, migracion (pre-deploy) y chequeo de salud estan en
+# railway.json, versionados junto al codigo.
+name: publicar-web
+
+on:
+  deployment_status:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Una publicacion a la vez; la que esta en curso termina en vez de cancelarse,
+# para no dejar el sitio a medio publicar.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  construir:
+    # Solo despliegues exitosos del entorno de produccion de Railway. El nombre
+    # del entorno que informa Railway puede llevar el del proyecto delante, por
+    # eso se busca "production" dentro del nombre.
+    if: >-
+      github.event.deployment_status.state == 'success' &&
+      contains(github.event.deployment.environment, 'production')
+    runs-on: ubuntu-latest
+    env:
+      VITE_API_URL: ${{ vars.API_URL }}
+    steps:
+      - name: Despliegue que dispara la publicacion
+        env:
+          ENTORNO: ${{ github.event.deployment.environment }}
+          COMMIT: ${{ github.event.deployment.sha }}
+          REF: ${{ github.event.deployment.ref }}
+        run: echo "Railway desplego $COMMIT (ref $REF) en $ENTORNO."
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Sin API_URL la web se construiria sin saber donde esta el API y
+      # mostraria un error de carga a todo el que la abra. Mejor no publicar.
+      - name: Comprobar la configuracion
+        run: |
+          if [ -z "$VITE_API_URL" ]; then
+            echo "::error::Falta la variable API_URL del repositorio (Settings > Secrets and variables > Actions > Variables)."
+            exit 1
+          fi
+          echo "La web apuntara a: $VITE_API_URL"
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Construir
+        run: npm run build
+
+      - name: Lint
+        run: npm run lint
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/web/dist
+
+  publicar:
+    needs: construir
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - id: despliegue
+        uses: actions/deploy-pages@v4

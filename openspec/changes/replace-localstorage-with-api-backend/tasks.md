@@ -110,13 +110,13 @@
 
 - [x] 7.1 Verificar que sigue vigente el repositorio remoto creado por `add-development-workflow` (`ragudc1984/idrconsultingcapacitacion`, rama principal `main`) y que muestra el historial completo
   > `ragudc1984/idrconsultingcapacitacion`, público. Por Gitflow, la rama predeterminada es `develop`, no `main`. El historial completo empieza en el commit inicial `6cf507b`.
-- [ ] 7.2 **[manual]** Crear en Railway el servicio web del API (proyecto con entorno de producción, sin despliegue automático desde GitHub: lo despliega `deploy.yml`), configurar `DATABASE_URL` (rama `production` de Neon, conexión directa con `sslmode=verify-full`) y `CORS_ORIGINS` como variables del servicio (`PORT` lo asigna Railway), generar su dominio público, y verificar que la comprobación de disponibilidad responde con éxito en esa dirección. Build, arranque, migración (pre-deploy) y chequeo de salud vienen de `railway.json`
+- [ ] 7.2 **[manual]** Crear en Railway el servicio web del API conectado al repositorio en la rama `main`, con *Wait for CI* activado, configurar `DATABASE_URL` (rama `production` de Neon, conexión directa con `sslmode=verify-full`), `CORS_ORIGINS` y `PORT` como variables del servicio, generar su dominio público, y verificar que la comprobación de disponibilidad responde con éxito en esa dirección. Build, arranque, migración (pre-deploy) y chequeo de salud vienen de `railway.json`
 - [x] 7.3 Trasladar a `apps/web` la configuración de `base` que creó `add-development-workflow` en `vite.config.ts` (`/idrconsultingcapacitacion/`, sobrescribible con `VITE_BASE`, aplicada en build y preview), y verificar con `npm run preview` que los assets cargan bajo esa ruta base
   > Ya se había trasladado en la fase 1, al mover `vite.config.ts`. Verificado con `npm run preview` desde la raíz: la página y los assets responden 200 bajo `/idrconsultingcapacitacion/`, y `VITE_BASE=/otra-ruta/` la sobrescribe sin tocar el código. En Git Bash hace falta `MSYS_NO_PATHCONV=1`, porque si no convierte `/otra-ruta/` en una ruta de Windows.
 - [x] 7.4 Verificar que GitHub Pages sigue habilitado con origen en GitHub Actions (lo habilitó `add-development-workflow`)
   > `gh api repos/.../pages`: `build_type=workflow`, en `https://ragudc1984.github.io/idrconsultingcapacitacion/`.
 - [ ] 7.5 **[manual]** Verificar el sistema publicado de punta a punta desde otro dispositivo: crear, completar, editar y eliminar una tarea contra el API remoto, recargar y confirmar que los cambios siguen ahí
-- [ ] 7.6 **[manual]** Verificar contra el sistema publicado que el estado de carga se mantiene comprensible durante una espera larga, sin mostrar error ni lista vacía. Railway no suspende el servicio en el plan de pago, así que la espera se provoca limitando la red (throttling de DevTools) al abrir la web publicada
+- [ ] 7.6 **[manual]** Verificar contra el sistema publicado que el estado de carga se mantiene comprensible durante una espera larga, sin mostrar error ni lista vacía. Railway no suspende el servicio por inactividad, así que la espera se provoca limitando la red (throttling de DevTools) al abrir la web publicada
 
 ## 8. Integración continua
 
@@ -133,10 +133,10 @@
 
 ## 9. Entrega continua
 
-- [ ] 9.1 Extender `.github/workflows/deploy.yml` (creado en versión mínima por `add-development-workflow`) para que construya `apps/web` con `VITE_API_URL` apuntando al API publicado, despliegue el API en Railway con su CLI esperando a que el despliegue termine (sólo `SUCCESS` cuenta), y publique la web en GitHub Pages **sólo si ese despliegue terminó bien**, y verificar que el archivo es YAML válido
-  > Reabierta al pasar de Render a Railway (`design.md`). La primera versión disparaba un deploy hook de Render en paralelo con la publicación de la web; en la release 0.3.0 el hook dio 404 y la web salió sin API.
-- [ ] 9.2 **[manual]** Registrar el token de proyecto de Railway como secreto `RAILWAY_TOKEN`, el nombre del servicio como variable `RAILWAY_SERVICE` y la dirección pública del API como variable `API_URL`, y verificar que ningún valor secreto aparece en archivos versionados ni en el historial
-  > Reabierta al pasar a Railway. La versión de Render registró `RENDER_DEPLOY_HOOK_URL` y `API_URL` con la dirección de Render; el secreto se borra y la variable se actualiza.
+- [ ] 9.1 Sustituir `.github/workflows/deploy.yml` (creado en versión mínima por `add-development-workflow`) por `verificar-main.yml`, que verifica cada push a `main` y es el CI que Railway espera, y `publicar-web.yml`, que al recibir de Railway un `deployment_status` exitoso de producción construye la web del mismo commit con `VITE_API_URL` y la publica en GitHub Pages, y verificar que los dos archivos son YAML válido
+  > Reabierta dos veces. La primera versión disparaba un deploy hook de Render en paralelo con la publicación de la web; en la release 0.3.0 el hook dio 404 y la web salió sin API. La segunda usaba el CLI de Railway con un token de proyecto, que exigía verificar la cuenta con tarjeta.
+- [ ] 9.2 **[manual]** Registrar la dirección pública del API como variable `API_URL`, borrar el secreto `RENDER_DEPLOY_HOOK_URL` que ya no se usa, y verificar que ningún valor secreto aparece en archivos versionados ni en el historial
+  > Reabierta al pasar a Railway. La integración con GitHub no necesita ningún secreto en el repositorio: el único dato es `API_URL`, que no es secreto.
 - [ ] 9.3 Verificar el escenario de publicación exitosa: integrar un cambio visible en la rama principal y confirmar que la web publicada y el API reflejan ese cambio sin que nadie ejecute nada manualmente
 - [ ] 9.4 Verificar el escenario de que no se publica lo que no compila: integrar un cambio que rompe la compilación, confirmar que no se publicó nada y que la versión publicada anteriormente sigue accesible, y revertir
 - [ ] 9.5 Verificar el escenario de migración aplicada antes de servir: integrar un cambio que incluya una migración de esquema y confirmar en los registros de Railway que la migración se aplicó en el pre-deploy, antes de que la versión nueva atendiera solicitudes

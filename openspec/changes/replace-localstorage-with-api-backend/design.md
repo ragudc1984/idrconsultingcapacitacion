@@ -158,31 +158,41 @@ ruta del repositorio, no en la raíz, y con la `base` por defecto todos los asse
 dan 404 —página en blanco sin error visible. Se configura desde una variable para
 que `npm run dev` siga funcionando en la raíz.
 
-**Dos workflows, no uno.** `ci.yml` corre en cada pull request: instala, lint,
-build de ambos workspaces. `deploy.yml` corre en push a la rama principal: repite
-lint y build, luego publica. Se repiten a propósito —un workflow de despliegue
-que confía en que otro ya verificó es un despliegue que un día publica algo roto.
+**Tres workflows.** `ci.yml` corre en cada pull request: instala, lint y build
+de todos los workspaces. `verificar-main.yml` repite esos pasos en cada push a
+`main`, y es el CI que Railway espera antes de desplegar el API.
+`publicar-web.yml` los repite otra vez antes de publicar la web. Se repiten a
+propósito: un workflow de despliegue que confía en que otro ya verificó es un
+despliegue que un día publica algo roto. *(Hasta el hotfix 0.3.2 había un
+único `deploy.yml` que verificaba y publicaba; ver abajo.)*
 *Nota:* `add-development-workflow` crea ambos en versión mínima (un solo
 proyecto, publicación solo en Pages); este cambio los extiende. Aquel cambio
 adoptó además Gitflow: el trabajo de este cambio va en ramas `feature-*` hacia
 `develop`, y se publica al integrar una `release-*` en `main`.
 
-**El API se despliega en Railway desde `deploy.yml`, y las migraciones se
-ejecutan dentro de Railway, no desde Actions.** Ejecutarlas desde Actions
+**El API lo despliega Railway desde `main`, y las migraciones se ejecutan
+dentro de Railway, no desde Actions.** Ejecutarlas desde Actions
 exigiría exponer la cadena de conexión de la base de datos a GitHub, ampliando
 la superficie de un secreto que hoy solo necesita conocer Railway.
 
-El job `desplegar-api` sube el código ya verificado con el CLI de Railway
-(`railway up --ci`, con un token de proyecto) y después consulta el estado del
-despliegue nuevo hasta que es final: sólo `SUCCESS` cuenta, y cualquier otra
-cosa —incluida una respuesta que no se entienda— falla el job. `publicar-web`
-depende de él, así que **la web sólo se publica si el API quedó desplegado**.
-La configuración del servicio (build, arranque, migración como *pre-deploy
-command* y chequeo de salud en `/salud`) vive en `railway.json`, versionada
-junto al código: un cambio de despliegue es un commit, no un clic en un panel.
-Se descartó la integración con GitHub de Railway con *Wait for CI*: no necesita
-token, pero Railway espera a que termine todo el CI —incluida la publicación de
-la web—, así que la web saldría antes que el API.
+El servicio de Railway está conectado al repositorio en la rama `main`, con
+*Wait for CI* activado: Railway espera a que terminen bien los workflows del
+commit (`verificar-main.yml`) y sólo entonces despliega. No hace falta ningún
+token en GitHub. La configuración del servicio (build, arranque, migración como
+*pre-deploy command* y chequeo de salud en `/salud`) vive en `railway.json`,
+versionada junto al código: un cambio de despliegue es un commit, no un clic en
+un panel.
+
+**La web se publica cuando Railway confirma que el API quedó arriba.** Railway
+informa a GitHub el estado de cada despliegue, y `publicar-web.yml` escucha el
+evento `deployment_status`: sólo con `success` en el entorno de producción
+construye y verifica la web de ese mismo commit y la publica en Pages. Si el
+despliegue del API falla —incluida la migración o el chequeo de salud—, Railway
+no informa `success`, el workflow no corre y la web anterior sigue publicada.
+Se descartó publicar la web desde el mismo workflow que Railway espera: Railway
+aguarda a que termine todo el CI del commit, y la web habría salido antes que el
+API. También se descartó desplegar con el CLI de Railway (`railway up`), que
+exigía un token de proyecto y, con él, verificar la cuenta con tarjeta.
 
 *Historia, para quien lea esto después:* el plan original publicaba el API en
 Render con un deploy hook y la migración como pre-deploy. Al aplicar se supo
@@ -193,10 +203,11 @@ publicaban en paralelo, la web nueva salió apuntando a un API que no existía.
 Un primer hotfix (0.3.1) puso la web detrás del disparo del API, y con un hook
 regenerado Render aceptó el pedido, pero el API siguió sin responder y la web
 se publicó igual: el hook sólo confirma que el pedido se aceptó, no que el
-despliegue terminó. El equipo decidió pasar a Railway, donde tiene plan de
-pago, en un segundo hotfix (0.3.2), porque producción seguía caída. Con
-`railway up` y la consulta de estado, el job confirma que el despliegue
-terminó antes de publicar la web.
+despliegue terminó. El equipo decidió pasar a Railway en un segundo
+hotfix (0.3.2), porque producción seguía caída. La cuenta resultó estar en el
+período de prueba (30 días o USD 5) y crear tokens exigía verificarla con
+tarjeta, así que se eligió la integración con GitHub en lugar del CLI. Al
+terminar la prueba, mantener el API en Railway requiere el plan de pago.
 
 `prisma` es dependencia de producción del API, no de desarrollo: la migración
 corre en el despliegue, y si la plataforma descartara las dependencias de
@@ -215,9 +226,12 @@ ejecutarla.
   Es la falla más probable de todo el cambio. Mitigación: la reorganización es su
   propia sección de tareas, con verificación por `grep -F` sobre el CSS
   construido antes de escribir una sola línea de código nuevo.
-- **[El servicio del API tarda en responder]** → Railway, en el plan de pago
-  del equipo, no suspende el servicio; la espera larga sigue siendo posible
-  durante un despliegue o por latencia de red, y tiene costo mensual. El
+- **[El período de prueba de Railway termina]** → La cuenta está en el Trial
+  (30 días o USD 5 de crédito). Al terminar, el API deja de servir si no se pasa
+  al plan de pago. Mitigación: decisión del equipo antes del vencimiento; el
+  código no depende de Railway más allá de `railway.json`.
+- **[El servicio del API tarda en responder]** → La espera larga sigue siendo
+  posible durante un despliegue o por latencia de red. El
   riesgo original, que motivó el requisito, era el plan gratuito de Render,
   que suspende el servicio por inactividad → La
   primera carga tras la suspensión puede tardar decenas de segundos. Mitigación:
