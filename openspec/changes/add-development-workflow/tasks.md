@@ -45,37 +45,43 @@
 - [x] 5.2 Documentar en el `README.md`, junto al script `verify`, que sus pasos deben actualizarse en el mismo cambio que modifique el workflow de GitHub, y que `act` es la opción de mayor fidelidad para quien quiera ejecutar los workflows reales localmente
 - [x] 5.3 Dejar escrito en el `README.md` que el repositorio y la aplicación publicada son públicos y que no deben cargarse datos reales
 - [x] 5.4 Verificar la documentación de puesta en marcha siguiéndola desde cero en un clon limpio del repositorio, en otra carpeta, confirmando que no hace falta ningún conocimiento que no esté escrito
-- [ ] 5.5 Integrar los cambios de las secciones 4 y 5 por pull request contra `main` —el primer cambio que recorre el flujo completo es el flujo mismo— y verificar que el pull request se puede abrir e integrar
+- [x] 5.5 Integrar los cambios de las secciones 4 y 5 por pull request contra `main` —el primer cambio que recorre el flujo completo es el flujo mismo— y verificar que el pull request se puede abrir e integrar
 
-## 6. Publicación
+## 6. Automatización y publicación
 
-> La 6.3, la 6.4 y la 6.5 requieren un workflow que despliegue en GitHub Pages,
-> y este cambio no lo crea: lo aporta `.github/workflows/deploy.yml` (tarea 9.1
-> de `replace-localstorage-with-api-backend`). Hasta entonces se dejan sin marcar
-> (`design.md` — Migration Plan). La 6.1 y la 6.2 no dependen de él.
+> Los workflows se crean aquí en su versión mínima (`design.md` — Decisions);
+> `replace-localstorage-with-api-backend` los extiende después.
 
-- [ ] 6.1 **[manual]** Habilitar GitHub Pages en el repositorio con origen en GitHub Actions, y verificar que la configuración queda activa
+- [x] 6.1 **[manual]** Habilitar GitHub Pages en el repositorio con origen en GitHub Actions, y verificar que la configuración queda activa
 - [x] 6.2 Configurar la ruta base del sitio para que los assets carguen bajo `/idrconsultingcapacitacion/` y no en la raíz (con la base por defecto, GitHub Pages devuelve 404 en todos los assets y la página queda en blanco sin error visible), y verificar localmente con `npm run preview` que los assets cargan bajo esa ruta
-- [ ] 6.3 **[manual]** Publicar la aplicación y verificar abriendo `https://ragudc1984.github.io/<repo>/` desde otro dispositivo, sin el proyecto instalado, que la lista de tareas carga y es usable
-- [ ] 6.4 Escribir la dirección pública definitiva al inicio del `README.md` y verificar que el enlace abre la aplicación
-- [ ] 6.5 Verificar que lo publicado refleja la rama principal: integrar un cambio visible en `main`, esperar la publicación, y confirmar que la dirección pública lo muestra
+- [ ] 6.3 Crear `.github/workflows/ci.yml` (en cada pull request contra `main`: `npm ci`, `npm run build`, `npm run lint` —los mismos comandos que `verify`) y `.github/workflows/deploy.yml` (en cada push a `main`: los mismos pasos y, solo si pasan, publicar `dist/` en GitHub Pages), verificar que ambos son YAML válido, e integrarlos por pull request confirmando que `ci` se ejecuta en ese mismo pull request
+- [ ] 6.4 **[manual]** Publicar la aplicación (la publicación ocurre al integrar `release-0.1.0` en `main`, tarea 9.6) y verificar abriendo `https://ragudc1984.github.io/idrconsultingcapacitacion/` desde otro dispositivo, sin el proyecto instalado, que la lista de tareas carga y es usable
+- [ ] 6.5 Escribir la dirección pública definitiva al inicio del `README.md` y verificar que el enlace abre la aplicación
+- [ ] 6.6 Verificar que lo publicado refleja la rama principal: integrar en `main` un cambio visible mediante una release o un hotfix, esperar la publicación, y confirmar que la dirección pública lo muestra
 
 ## 7. Protección de la rama principal
 
-> Se hace al final: GitHub no ofrece como requerible una comprobación que nunca
-> ha visto correr (`design.md` — Decisions).
+> Se hace después de la 6.3: GitHub no ofrece como requerible una comprobación
+> que nunca ha visto correr (`design.md` — Decisions).
 
-- [ ] 7.1 **[manual]** Configurar la protección de `main` exigiendo pull request y comprobaciones en verde antes de integrar, y verificar que la configuración queda guardada
-- [ ] 7.2 Verificar que el push directo queda rechazado: intentar empujar un commit directamente a `main` y confirmar que el remoto lo rechaza, dejando el intento sin efecto
-- [ ] 7.3 Verificar el flujo completo de integración: crear una rama de trabajo, empujarla, abrir un pull request, esperar las comprobaciones, e integrarlo
+- [x] 7.1 **[manual]** Configurar la protección de `main` exigiendo pull request y comprobaciones en verde antes de integrar, y verificar que la configuración queda guardada
+- [x] 7.2 Verificar que el push directo queda rechazado: intentar empujar un commit directamente a `main` y confirmar que el remoto lo rechaza, dejando el intento sin efecto
+- [ ] 7.3 Verificar el flujo completo de integración con Gitflow: crear una rama `feature-*` desde `develop`, empujarla, abrir un pull request contra `develop`, esperar las comprobaciones, e integrarlo
 
 ## 8. Coincidencia entre la verificación local y la automatización
 
-> Estas tareas requieren que exista el workflow de GitHub, que crea el cambio
-> `replace-localstorage-with-api-backend`. Se ejecutan cuando ese cambio haya
-> aportado `.github/workflows/ci.yml`; hasta entonces se dejan sin marcar
-> (`design.md` — Migration Plan).
+- [x] 8.1 Comparar paso a paso el script `verify` con el workflow de integración continua y confirmar que ejecutan los mismos comandos, ajustando `verify` si difieren
+- [x] 8.2 Verificar la coincidencia en la práctica: abrir un pull request con un cambio que pasa `npm run verify` localmente y confirmar que la automatización remota también pasa
+- [ ] 8.3 Verificar el caso contrario: abrir un pull request con un cambio que falla `npm run verify` localmente y confirmar que la automatización remota también falla, comprobando que la señal local no da falsos positivos. La rama de prueba sale de `develop` con los workflows ya integrados: un primer intento desde `main`, sin `ci.yml`, no ejecutó ninguna comprobación y no cuenta
 
-- [ ] 8.1 Comparar paso a paso el script `verify` con el workflow de integración continua y confirmar que ejecutan los mismos comandos, ajustando `verify` si difieren
-- [ ] 8.2 Verificar la coincidencia en la práctica: abrir un pull request con un cambio que pasa `npm run verify` localmente y confirmar que la automatización remota también pasa
-- [ ] 8.3 Verificar el caso contrario: abrir un pull request con un cambio que falla `npm run verify` localmente y confirmar que la automatización remota también falla, comprobando que la señal local no da falsos positivos
+## 9. Gitflow y nomenclatura de ramas
+
+> Sigue `https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow`
+> con la nomenclatura de guion del equipo (`design.md` — Decisions).
+
+- [x] 9.1 Crear `develop` desde `main`, empujarla, configurarla como rama predeterminada del repositorio, y verificar con `gh repo view` que es la predeterminada y apunta al mismo commit que `main`
+- [x] 9.2 Renombrar las ramas existentes al estándar: `agrega-integracion-y-publicacion` → `feature-integracion-y-publicacion` (con el renombre de GitHub; renombrar la rama de origen cierra su pull request, así que el #2 se reemplaza por uno nuevo contra `develop`); borrar `agrega-puerta-de-verificacion`, ya integrada; y verificar con `git ls-remote --heads origin` que solo quedan `main`, `develop` y ramas que respetan la nomenclatura
+- [x] 9.3 Agregar a `ci.yml` el job `nomenclatura` y el disparo en pull requests contra `develop`, y verificar los tres escenarios del spec: un pull request con nombre válido pasa, uno con nombre inválido falla indicando el formato esperado, y una rama `feature-*` contra `main` falla
+- [x] 9.4 Proteger `develop` igual que `main` y exigir en ambas `verificar` y `nomenclatura`, y verificar leyendo la configuración y confirmando que un push directo a `develop` es rechazado
+- [x] 9.5 Documentar en el `README.md` el modelo de ramas, la nomenclatura, y los pasos de funcionalidad, release y hotfix, incluida la vuelta a `develop` y la etiqueta de versión
+- [ ] 9.6 Publicar la primera versión: crear `release-0.1.0` desde `develop`, fijar `"version": "0.1.0"` en `package.json`, integrarla por pull request en `main`, confirmar que `deploy` publica, crear la etiqueta `v0.1.0` sobre el commit de integración, e integrar `release-0.1.0` de vuelta en `develop`

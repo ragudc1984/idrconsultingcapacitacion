@@ -32,8 +32,20 @@ reemplazar.
 - **Se crea el repositorio remoto** bajo la cuenta `ragudc1984` desde
   `https://github.com/`, se hace el commit inicial de todo el trabajo existente,
   y la rama principal pasa a llamarse `main`.
-- **Cada cambio llega a `main` por pull request**, no por push directo: rama de
-  trabajo, pull request, comprobaciones en verde, merge.
+- **Las ramas siguen Gitflow**, según la documentación de Atlassian
+  (`https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow`):
+  `main` guarda solo versiones publicadas y `develop` integra funcionalidades.
+  Las funcionalidades salen de `develop` y vuelven a `develop`; las releases salen
+  de `develop`, entran en `main` y vuelven a `develop`; los hotfixes salen de
+  `main`, entran en `main` y vuelven a `develop`. Todo por pull request con
+  comprobaciones en verde, nunca por push directo.
+- **Nomenclatura obligatoria de ramas:** `feature-<nombre-funcionalidad>` para
+  una funcionalidad nueva, `hotfix-<nombre-issue>` para solucionar un issue, y
+  `release-<X.Y.Z>` para preparar una versión. La automatización rechaza un pull
+  request que no la respete. Las ramas existentes en GitHub se renombran a este
+  estándar.
+- **Cada versión publicada lleva etiqueta** `vX.Y.Z` en `main`, con versionado
+  semántico.
 - **La aplicación queda publicada y accesible** en la dirección pública de GitHub
   Pages de la cuenta, y esa dirección queda escrita en el repositorio para que
   cualquiera la encuentre sin preguntar.
@@ -52,10 +64,18 @@ reemplazar.
   capacidad `continuous-delivery` del cambio
   `replace-localstorage-with-api-backend`. El commit por cada cambio se conserva;
   lo que cambia es que llega a `main` por merge y no por push.
+- **Gitflow se adoptó a pedido del equipo, sabiendo lo que dice su propia
+  documentación:** Atlassian lo presenta como un flujo *legacy*, desplazado por el
+  desarrollo basado en trunk y difícil de combinar con CI/CD. Se eligió igual
+  porque el objetivo es que el equipo practique un modelo de ramas con releases y
+  hotfixes explícitos (ver `design.md` — Decisions).
+- Atlassian y la extensión `git-flow` usan barra (`feature/nombre`); este
+  repositorio usa **guion** (`feature-nombre`) por decisión del equipo.
 
 **No entra en este cambio** (ver `design.md` — Non-Goals): dominio propio,
 formateador automático, hooks de pre-commit, convención obligatoria de mensajes
-de commit, versionado semántico, entornos de staging y runner de tests.
+de commit, entornos de staging (`develop` no se publica) y runner de tests. El
+versionado semántico, que figuraba aquí, se reabrió al adoptar Gitflow.
 
 ## Capabilities
 
@@ -85,8 +105,15 @@ request— pero ninguna de las dos modifica los requisitos de la otra.
   aplicación.
 - `.gitignore` — se revisa antes del commit inicial para confirmar que nada
   sensible entra al historial.
+- `.github/workflows/` — `ci.yml` y `deploy.yml` en versión mínima (build, lint y
+  publicación en Pages), que `replace-localstorage-with-api-backend` extiende.
+  `ci.yml` suma la validación de nomenclatura de ramas y corre también en pull
+  requests contra `develop`.
+- `package.json` — el campo `version` pasa a seguir las etiquetas de release.
 
-**Sistemas externos:** un repositorio en GitHub bajo `ragudc1984`
+**Sistemas externos:** un repositorio en GitHub bajo `ragudc1984`, con las ramas
+permanentes `main` y `develop` (esta última como predeterminada), ambas
+protegidas, y las ramas existentes renombradas al estándar;
 (`ragudc514@gmail.com`) con GitHub Pages habilitado y la rama principal
 protegida.
 
@@ -94,8 +121,8 @@ protegida.
 el commit inicial y la rama `main` protegida, que son prerrequisitos de las fases
 7 a 9 de `replace-localstorage-with-api-backend`. **Conviene aplicarlo primero.**
 Si se aplicara después, las tareas de creación del remoto quedarían duplicadas
-entre ambos cambios. En el otro sentido, la publicación en GitHub Pages depende
-del workflow de despliegue (`deploy.yml`) que aporta aquel cambio.
+entre ambos cambios. Este cambio crea además los workflows mínimos de
+integración y publicación; aquel los extiende en lugar de crearlos.
 
 **Riesgo operativo conocido:** el commit inicial abarca 101 rutas, incluidas
 `.claude/settings.local.json` y el directorio completo de skills vendorizadas. Lo
