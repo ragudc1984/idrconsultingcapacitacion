@@ -31,9 +31,12 @@
 
 ## 3. API: esqueleto y base de datos
 
-- [ ] 3.1 Crear `apps/api` con `express`, `cors`, `zod`, `tsx` y TypeScript, un servidor mínimo que escuche en el puerto de `PORT` (con valor por defecto para desarrollo), y verificar que `npm run dev -w apps/api` arranca y responde
-- [ ] 3.2 Añadir `.env.example` con `DATABASE_URL`, `PORT` y `CORS_ORIGINS`, confirmar que `.env` está en `.gitignore`, y verificar con `git status` que ningún archivo `.env` real aparece como rastreado
-- [ ] 3.3 Instalar Prisma en `apps/api` y definir el modelo `Task` (`id` uuid generado por la base de datos, `title`, `done` con valor por defecto `false`, `createdAt`), y verificar que `npx prisma validate` pasa
+- [x] 3.1 Crear `apps/api` con `express`, `cors`, `zod`, `tsx` y TypeScript, un servidor mínimo que escuche en el puerto de `PORT` (con valor por defecto para desarrollo), y verificar que `npm run dev -w apps/api` arranca y responde
+  > Express 5 con `tsx watch`; `crearApp()` separada de `server.ts`. Responde 200 en el puerto 3000 por defecto y respeta `PORT` (probado con 3999).
+- [x] 3.2 Añadir `.env.example` con `DATABASE_URL`, `PORT` y `CORS_ORIGINS`, confirmar que `.env` está en `.gitignore`, y verificar con `git status` que ningún archivo `.env` real aparece como rastreado
+  > `apps/api/.env.example` documenta las tres variables. Comprobado con `git check-ignore` que `apps/api/.env` y `.env.local` quedan ignorados y que `.env.example` se versiona.
+- [x] 3.3 Instalar Prisma en `apps/api` y definir el modelo `Task` (`id` uuid generado por la base de datos, `title`, `done` con valor por defecto `false`, `createdAt`), y verificar que `npx prisma validate` pasa
+  > Prisma 7.10.0, fijado a propósito: la etiqueta `latest` de `prisma` en npm apunta a una RC 8.0. El `id` usa `dbgenerated("gen_random_uuid()")` para que lo genere PostgreSQL y no el cliente. La URL vive en `prisma.config.ts`, cargada con `process.loadEnvFile()` en vez de `dotenv`. El cliente generado queda fuera de Git y de oxlint, y el `build` del API lo genera antes de comprobar tipos. `prisma init` también instaló 213 archivos de skills para agentes en `apps/api/`; se borraron.
 - [ ] 3.4 **[manual]** Aprovisionar una base de datos PostgreSQL gestionada (Neon) bajo la cuenta `ragudc514@gmail.com`, poner su cadena de conexión en el `.env` local, y verificar la conexión ejecutando `npx prisma migrate dev --name init` y comprobando que la tabla existe con `npx prisma studio`
 - [ ] 3.5 Confirmar que el directorio `prisma/migrations/` queda versionado en el repositorio, y verificar con `git status` que el archivo de migración aparece para commit (las migraciones son artefactos del repo, no del entorno — `design.md`)
 
@@ -42,13 +45,15 @@
 > Cubre la capacidad `task-api`. Cada tarea se verifica contra los escenarios del
 > spec con peticiones reales (`curl` o el cliente HTTP del editor).
 
-- [ ] 4.1 Implementar el middleware de manejo de errores con forma uniforme (código y mensaje en español) y los códigos HTTP 400 / 404 / 500, y verificar que una ruta inexistente y un cuerpo JSON malformado devuelven esa forma y no una traza de error
+- [x] 4.1 Implementar el middleware de manejo de errores con forma uniforme (código y mensaje en español) y los códigos HTTP 400 / 404 / 500, y verificar que una ruta inexistente y un cuerpo JSON malformado devuelven esa forma y no una traza de error
+  > Forma `{ error: { codigo, mensaje } }`. Verificado con curl: una ruta inexistente da 404 `NO_ENCONTRADO`, un JSON malformado da 400 y un cuerpo de más de 100 KB da 400, todos sin traza. Un error inesperado se registra en el servidor y responde 500 con un mensaje genérico; ese camino se ejercita en la 4.6.
 - [ ] 4.2 Implementar la lectura de la lista de tareas ordenada por `createdAt` ascendente con `id` como desempate, y verificar que devuelve éxito y una colección vacía cuando no hay tareas, y las tareas en orden de creación cuando las hay
 - [ ] 4.3 Implementar la creación de tarea con validación del esquema compartido, `id` asignado por la base de datos y `done` en `false`, y verificar los cuatro escenarios del spec: creación exitosa devuelve código de recurso creado, título vacío o solo espacios devuelve 400 sin almacenar, título de más de 200 caracteres devuelve 400, y un `id` enviado por el cliente se ignora
 - [ ] 4.4 Implementar la actualización parcial de tarea (título, `done`, o ambos; el campo ausente conserva su valor), y verificar los cuatro escenarios del spec, incluido que actualizar un `id` inexistente devuelve 404 sin crear nada
 - [ ] 4.5 Implementar la eliminación de tarea, y verificar que tras eliminar con éxito la tarea no aparece en una lectura posterior, y que eliminar un `id` inexistente devuelve 404
 - [ ] 4.6 Implementar la operación de comprobación de disponibilidad que verifique el acceso al almacenamiento, y verificar que responde con éxito con la base de datos accesible y con error al apuntar `DATABASE_URL` a una base inalcanzable
-- [ ] 4.7 Configurar CORS con lista blanca leída de `CORS_ORIGINS` (nunca comodín), y verificar que una petición con un `Origin` declarado recibe la cabecera de autorización y una con un `Origin` no declarado no la recibe
+- [x] 4.7 Configurar CORS con lista blanca leída de `CORS_ORIGINS` (nunca comodín), y verificar que una petición con un `Origin` declarado recibe la cabecera de autorización y una con un `Origin` no declarado no la recibe
+  > Verificado con curl: los orígenes declarados reciben `Access-Control-Allow-Origin`, también en el preflight de `PATCH`. Uno no declarado no la recibe, incluido `localhost:5174`. Las peticiones sin `Origin` siguen funcionando. `CORS_ORIGINS="*"` impide arrancar el servidor.
 - [ ] 4.8 Verificar que las tareas sobreviven al reinicio del servicio: crear varias tareas, detener y volver a arrancar `npm run dev -w apps/api`, y comprobar que la lectura devuelve las mismas tareas en el mismo orden
 - [ ] 4.9 Verificar que `npm run build` y `npx oxlint` pasan sobre `apps/api` desde la raíz
 
