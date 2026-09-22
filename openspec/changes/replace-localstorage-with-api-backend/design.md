@@ -190,10 +190,13 @@ que el pre-deploy de Render es de pago y la migración pasó al final del build.
 En la release 0.3.0 el hook respondió 404 (se había regenerado), el servicio
 estaba conectado a `develop` en vez de `main`, y como la web y el API se
 publicaban en paralelo, la web nueva salió apuntando a un API que no existía.
-El equipo decidió pasar a Railway, donde tiene plan de pago; el cambio se hizo
-como hotfix porque producción estaba caída. Además del proveedor, se corrigió
-el orden: el hook de Render sólo confirmaba que el pedido se había aceptado, y
-`railway up` más la consulta de estado confirman que el despliegue terminó.
+Un primer hotfix (0.3.1) puso la web detrás del disparo del API, y con un hook
+regenerado Render aceptó el pedido, pero el API siguió sin responder y la web
+se publicó igual: el hook sólo confirma que el pedido se aceptó, no que el
+despliegue terminó. El equipo decidió pasar a Railway, donde tiene plan de
+pago, en un segundo hotfix (0.3.2), porque producción seguía caída. Con
+`railway up` y la consulta de estado, el job confirma que el despliegue
+terminó antes de publicar la web.
 
 `prisma` es dependencia de producción del API, no de desarrollo: la migración
 corre en el despliegue, y si la plataforma descartara las dependencias de
