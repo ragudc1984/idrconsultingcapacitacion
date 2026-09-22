@@ -99,9 +99,12 @@
 
 ## 6. Sincronizar las tres autoridades con la arquitectura nueva
 
-- [ ] 6.1 Actualizar `PRODUCT.md`: sustituir la restricción vinculante "Sin backend" por la arquitectura nueva y sus restricciones reales (lista única sin cuentas, accesible por quien tenga la dirección, sin datos reales), y actualizar la lista de capacidades confirmadas y los comandos de Operating Context
-- [ ] 6.2 Actualizar `CLAUDE.md`: comandos de workspaces, la sección de arquitectura (el dueño único del estado ahora escribe contra el API, no contra `localStorage`), la estructura de carpetas y las rutas `@source` de Tailwind, y verificar que ninguna instrucción del archivo describe código que ya no existe
-- [ ] 6.3 Añadir al `README.md` las instrucciones de puesta en marcha local: variables de entorno requeridas, `npm install`, migración de base de datos y arranque de ambos workspaces, y verificar siguiéndolas desde cero en una copia limpia del repositorio
+- [x] 6.1 Actualizar `PRODUCT.md`: sustituir la restricción vinculante "Sin backend" por la arquitectura nueva y sus restricciones reales (lista única sin cuentas, accesible por quien tenga la dirección, sin datos reales), y actualizar la lista de capacidades confirmadas y los comandos de Operating Context
+  > «Sin backend» pasa a la restricción «Una sola lista, sin cuentas», que describe la arquitectura, y se agregan «Sin datos reales» y «La interfaz espera al servidor». También se actualizan el usuario simulado, las capacidades, los comandos de workspaces y «No existe despliegue», que ya era falso desde la publicación en GitHub Pages.
+- [x] 6.2 Actualizar `CLAUDE.md`: comandos de workspaces, la sección de arquitectura (el dueño único del estado ahora escribe contra el API, no contra `localStorage`), la estructura de carpetas y las rutas `@source` de Tailwind, y verificar que ninguna instrucción del archivo describe código que ya no existe
+  > Comandos de workspaces y variables de entorno, tres workspaces, `commitTasks` asíncrono contra el API, la lista como unión de tres formas, `aria-disabled` en lugar de `disabled`, rutas nuevas de Tailwind y los gotchas nuevos: procesos huérfanos de `tsx watch` y Vite, y cliente de Prisma generado. `grep` confirma que no queda ninguna mención a `localStorage`, `storage.ts`, `createTaskId` ni rutas `src/` viejas. `DESIGN.md` también quedó desfasado (aviso de almacenamiento, seis controles), pero no forma parte de esta tarea; se reporta al equipo.
+- [x] 6.3 Añadir al `README.md` las instrucciones de puesta en marcha local: variables de entorno requeridas, `npm install`, migración de base de datos y arranque de ambos workspaces, y verificar siguiéndolas desde cero en una copia limpia del repositorio
+  > Verificada siguiendo solo el README en un clon limpio, en otra carpeta. El primer intento falló: el API no arrancaba (`ERR_MODULE_NOT_FOUND`) porque en un clon no existe el cliente de Prisma generado. Se corrigió con `predev: prisma generate` en el API. Con ese arreglo, el clon instala, migra, arranca los dos servidores, y la web carga, crea una tarea y la conserva tras recargar.
 
 ## 7. Publicar en remoto
 
