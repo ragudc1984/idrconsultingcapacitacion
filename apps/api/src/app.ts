@@ -22,7 +22,7 @@ export function crearApp({ origenesPermitidos, prisma }: Opciones) {
     res.json({ servicio: 'API de tareas' })
   })
 
-  // Render la consulta para saber si la version nueva puede recibir trafico:
+  // Railway la consulta para saber si la version nueva puede recibir trafico:
   // no basta con que el proceso este vivo, tiene que alcanzar la base.
   app.get('/salud', async (_req, res) => {
     try {

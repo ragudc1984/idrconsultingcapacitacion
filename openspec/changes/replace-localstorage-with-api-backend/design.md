@@ -92,7 +92,7 @@ mejor técnicamente, pero suma plugins y hooks como conceptos nuevos que compite
 con el foco real del ejercicio, que es OpenSpec y no el framework.
 
 **Prisma con PostgreSQL gestionado (Neon), no SQLite.** *Al aplicar:* el
-proyecto de Neon tiene dos ramas, `production` para Render y `desarrollo`
+proyecto de Neon tiene dos ramas, `production` para Railway y `desarrollo`
 para el `.env` local, de modo que las pruebas de desarrollo no aparezcan en la
 app publicada. Prisma da migraciones
 versionadas —archivos en el repositorio, aplicados en el despliegue— que son
@@ -167,21 +167,37 @@ proyecto, publicación solo en Pages); este cambio los extiende. Aquel cambio
 adoptó además Gitflow: el trabajo de este cambio va en ramas `feature-*` hacia
 `develop`, y se publica al integrar una `release-*` en `main`.
 
-**El despliegue del API se dispara con un deploy hook de Render, y las
-migraciones se ejecutan dentro de Render, no desde Actions.** Ejecutarlas desde
-Actions exigiría exponer la cadena de conexión de la base de datos a GitHub,
-ampliando la superficie de un secreto que hoy solo necesita conocer Render.
+**El API se despliega en Railway desde `deploy.yml`, y las migraciones se
+ejecutan dentro de Railway, no desde Actions.** Ejecutarlas desde Actions
+exigiría exponer la cadena de conexión de la base de datos a GitHub, ampliando
+la superficie de un secreto que hoy solo necesita conocer Railway.
 
-*Revisado al aplicar:* el plan original usaba el comando de pre-deploy de
-Render, pero según su documentación *"the pre-deploy command is available for
-paid web services"*, y el servicio usa el plan gratuito. La migración pasa al
-**final del comando de build**
-(`npm ci && npm run build -w @idr/api && npx -w @idr/api prisma migrate deploy`).
-Cumple el mismo requisito: si cualquier comando del build falla, Render aborta
-el despliegue y *"your service continues running its most recent successful
-deploy"*. Y como la migración va al final, sólo se aplica cuando todo lo
-anterior compiló. El auto-deploy de Render queda apagado: el único disparador
-es el deploy hook, que `deploy.yml` llama después de verificar.
+El job `desplegar-api` sube el código ya verificado con el CLI de Railway
+(`railway up --ci`, con un token de proyecto) y después consulta el estado del
+despliegue nuevo hasta que es final: sólo `SUCCESS` cuenta, y cualquier otra
+cosa —incluida una respuesta que no se entienda— falla el job. `publicar-web`
+depende de él, así que **la web sólo se publica si el API quedó desplegado**.
+La configuración del servicio (build, arranque, migración como *pre-deploy
+command* y chequeo de salud en `/salud`) vive en `railway.json`, versionada
+junto al código: un cambio de despliegue es un commit, no un clic en un panel.
+Se descartó la integración con GitHub de Railway con *Wait for CI*: no necesita
+token, pero Railway espera a que termine todo el CI —incluida la publicación de
+la web—, así que la web saldría antes que el API.
+
+*Historia, para quien lea esto después:* el plan original publicaba el API en
+Render con un deploy hook y la migración como pre-deploy. Al aplicar se supo
+que el pre-deploy de Render es de pago y la migración pasó al final del build.
+En la release 0.3.0 el hook respondió 404 (se había regenerado), el servicio
+estaba conectado a `develop` en vez de `main`, y como la web y el API se
+publicaban en paralelo, la web nueva salió apuntando a un API que no existía.
+El equipo decidió pasar a Railway, donde tiene plan de pago; el cambio se hizo
+como hotfix porque producción estaba caída. Además del proveedor, se corrigió
+el orden: el hook de Render sólo confirmaba que el pedido se había aceptado, y
+`railway up` más la consulta de estado confirman que el despliegue terminó.
+
+`prisma` es dependencia de producción del API, no de desarrollo: la migración
+corre en el despliegue, y si la plataforma descartara las dependencias de
+desarrollo, `npx` bajaría la etiqueta `latest`, que llegó a apuntar a una RC.
 
 **Rama principal protegida, ramas de feature con pull request.** Hoy el
 repositorio está en `master` sin remoto. El cambio incluye crear el repositorio
@@ -196,7 +212,11 @@ ejecutarla.
   Es la falla más probable de todo el cambio. Mitigación: la reorganización es su
   propia sección de tareas, con verificación por `grep -F` sobre el CSS
   construido antes de escribir una sola línea de código nuevo.
-- **[El plan gratuito de Render suspende el servicio por inactividad]** → La
+- **[El servicio del API tarda en responder]** → Railway, en el plan de pago
+  del equipo, no suspende el servicio; la espera larga sigue siendo posible
+  durante un despliegue o por latencia de red, y tiene costo mensual. El
+  riesgo original, que motivó el requisito, era el plan gratuito de Render,
+  que suspende el servicio por inactividad → La
   primera carga tras la suspensión puede tardar decenas de segundos. Mitigación:
   el spec lo contempla explícitamente —el estado de carga debe mantenerse
   comprensible durante toda la espera, sin degradar a error ni a lista vacía. Se
@@ -214,7 +234,7 @@ ejecutarla.
   como restricción, no como descuido. **No se deben poner datos reales ahí.**
 - **[Un secreto filtrado en un log o en un commit]** → Mitigación: `.env` en
   `.gitignore` desde el primer commit del API, secretos solo en la configuración
-  de GitHub y de Render, y una tarea explícita de revisar el registro de la
+  de GitHub y de Railway, y una tarea explícita de revisar el registro de la
   primera ejecución de despliegue.
 - **[Los estados de carga y error son interfaz nueva y pueden nacer
   inaccesibles]** → `PRODUCT.md` declara la accesibilidad como piso, no como

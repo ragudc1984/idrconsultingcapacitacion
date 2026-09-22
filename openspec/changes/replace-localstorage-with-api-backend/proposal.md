@@ -36,7 +36,7 @@ no por omisión:
   comparte en `packages/shared/`.
 - Se agrega **CI/CD con GitHub Actions**: integración continua que bloquea con
   lint y build de ambos workspaces, y entrega continua que publica la web en
-  GitHub Pages y el API en Render al integrar en la rama principal.
+  GitHub Pages y el API en Railway al integrar en la rama principal.
 - Se actualiza `PRODUCT.md`: la restricción "Sin backend" se sustituye por la
   arquitectura y las restricciones nuevas (un único usuario compartido, sin
   cuentas).
@@ -90,10 +90,10 @@ arquitectura y la sección del dueño único del estado, que hoy describe
 `commitTasks` escribiendo en `localStorage`).
 
 **Sistemas externos nuevos:** una base de datos PostgreSQL gestionada, un
-servicio web en Render y GitHub Pages, todos bajo la cuenta `ragudc1984`. Cada
+servicio web en Railway y GitHub Pages, todos bajo la cuenta `ragudc1984`. Cada
 uno introduce secretos que viven en GitHub Actions y nunca en el repositorio.
 
-**Riesgo operativo conocido:** el plan gratuito de Render suspende el servicio
+**Riesgo operativo conocido** (escrito cuando el API iba a Render; ver `design.md` para el paso a Railway, que en el plan de pago no suspende el servicio): el plan gratuito de Render suspende el servicio
 tras un periodo de inactividad; la primera petición después de eso puede tardar
 decenas de segundos. La interfaz debe seguir siendo comprensible durante esa
 espera.

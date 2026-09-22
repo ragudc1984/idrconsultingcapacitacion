@@ -1,13 +1,18 @@
 # Publicacion: en cada push a main repite la puerta de verificacion y, solo si
-# pasa, publica apps/web/dist/ en GitHub Pages y dispara el despliegue del API
-# en Render. Repite los pasos de ci.yml a proposito: un despliegue que confia en
-# que otro workflow ya verifico es un despliegue que un dia publica algo roto.
+# pasa, despliega el API en Railway y, solo si ese despliegue termino bien,
+# publica apps/web/dist/ en GitHub Pages. Repite los pasos de ci.yml a
+# proposito: un despliegue que confia en que otro workflow ya verifico es un
+# despliegue que un dia publica algo roto.
 #
 # Configuracion del repositorio (Settings > Secrets and variables > Actions):
 # - variable API_URL: direccion publica del API. No es secreta; queda escrita
 #   en el JavaScript de la web.
-# - secreto RENDER_DEPLOY_HOOK_URL: la URL del deploy hook de Render. Quien la
-#   tiene puede redesplegar el API, por eso es secreta.
+# - variable RAILWAY_SERVICE: nombre del servicio del API en Railway.
+# - secreto RAILWAY_TOKEN: token de proyecto de Railway (del entorno de
+#   produccion). Quien lo tiene puede desplegar en ese proyecto.
+#
+# Build, arranque, migracion (pre-deploy) y chequeo de salud del API estan en
+# railway.json, versionados junto al codigo.
 name: deploy
 
 on:
@@ -61,8 +66,11 @@ jobs:
         with:
           path: apps/web/dist
 
+  # Despues del API y no en paralelo: si el despliegue del API falla, la web
+  # anterior sigue publicada. Publicarlas a la vez dejo en la 0.3.0 una web
+  # nueva apuntando a un API que nunca se desplego.
   publicar-web:
-    needs: construir
+    needs: [construir, desplegar-api]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -71,20 +79,57 @@ jobs:
       - id: despliegue
         uses: actions/deploy-pages@v4
 
-  # Render construye el API desde main y aplica las migraciones al final de su
-  # comando de build; si algo falla, sigue sirviendo la version anterior. Su
-  # auto-deploy esta apagado: este hook es el unico disparador.
+  # railway up sube el codigo ya verificado y sigue el build (--ci). El build
+  # termina antes que el pre-deploy (la migracion) y el chequeo de salud, asi
+  # que despues se consulta el estado del despliegue nuevo hasta que sea final,
+  # y solo SUCCESS cuenta. Cualquier otra cosa, incluida una respuesta que no se
+  # entienda, falla el job: la web no se publica sin un API desplegado.
   desplegar-api:
     needs: construir
     runs-on: ubuntu-latest
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      SERVICIO: ${{ vars.RAILWAY_SERVICE }}
     steps:
-      - name: Disparar el deploy hook de Render
-        env:
-          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+      - uses: actions/checkout@v4
+
+      - name: Comprobar la configuracion
         run: |
-          if [ -z "$HOOK" ]; then
-            echo "::error::Falta el secreto RENDER_DEPLOY_HOOK_URL del repositorio."
+          if [ -z "$RAILWAY_TOKEN" ]; then
+            echo "::error::Falta el secreto RAILWAY_TOKEN del repositorio."
             exit 1
           fi
-          curl --fail --silent --show-error --output /dev/null --request POST "$HOOK"
-          echo "Despliegue del API solicitado a Render."
+          if [ -z "$SERVICIO" ]; then
+            echo "::error::Falta la variable RAILWAY_SERVICE del repositorio."
+            exit 1
+          fi
+
+      # Version fijada: la etiqueta latest de un CLI puede cambiar sin aviso.
+      - name: Instalar el CLI de Railway
+        run: npm install --global @railway/cli@5.59.0
+
+      # shell: bash activa -eo pipefail: un fallo de railway o de jq dentro de un
+      # pipe detiene el job en el acto, en vez de esperar al tiempo limite.
+      - name: Desplegar en Railway
+        shell: bash
+        run: |
+          antes=$(railway deployment list --service "$SERVICIO" --limit 20 --json | jq -r '[.[].id] | join(" ")')
+          railway up --ci --service "$SERVICIO"
+
+          for intento in $(seq 1 60); do
+            lista=$(railway deployment list --service "$SERVICIO" --limit 5 --json)
+            nuevo=$(echo "$lista" | jq -r --arg antes " $antes " '[.[] | .id as $i | select(($antes | contains(" " + $i + " ")) | not)][0].id // empty')
+            if [ -n "$nuevo" ]; then
+              estado=$(echo "$lista" | jq -r --arg id "$nuevo" '.[] | select(.id == $id) | .status')
+              echo "Despliegue $nuevo: $estado"
+              case "$estado" in
+                SUCCESS) echo "API desplegado."; exit 0 ;;
+                FAILED|CRASHED|REMOVED|SKIPPED)
+                  echo "::error::El despliegue del API termino en $estado. La web no se publica."
+                  exit 1 ;;
+              esac
+            fi
+            sleep 10
+          done
+          echo "::error::El despliegue del API no llego a un estado final en 10 minutos."
+          exit 1

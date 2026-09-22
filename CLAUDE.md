@@ -106,6 +106,16 @@ se dejan sin marcar y se dice por qué.
 El `id` de una tarea lo genera PostgreSQL (`gen_random_uuid()`), nunca el
 cliente.
 
+### Dónde se publica cada parte
+
+La web va a **GitHub Pages**, el API a **Railway** y la base es **Neon** (rama
+`production`; `desarrollo` para el `.env` local). Todo lo dispara
+`.github/workflows/deploy.yml` al integrar en `main`: verifica, despliega el API
+con `railway up` y espera a que el despliegue termine en `SUCCESS`, y **sólo
+entonces** publica la web. La configuración del servicio de Railway —build,
+arranque, migración como pre-deploy y chequeo de salud— está en `railway.json` y
+manda sobre el panel de Railway: se cambia con un commit, no con un clic.
+
 ### Un único dueño del estado
 
 `apps/web/src/App.tsx` posee todo el estado. Los componentes son
