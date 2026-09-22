@@ -20,7 +20,7 @@ export function leerOrigenesPermitidos(valor: string | undefined): string[] {
 /**
  * A un origen declarado se le devuelve la cabecera de autorizacion; a uno no
  * declarado no se le devuelve nada y el navegador bloquea la respuesta. Las
- * peticiones sin Origin (curl, la comprobacion de disponibilidad de Render) no
+ * peticiones sin Origin (curl, la comprobacion de disponibilidad de Railway) no
  * son de navegador y CORS no aplica.
  */
 export function crearCors(origenesPermitidos: string[]) {

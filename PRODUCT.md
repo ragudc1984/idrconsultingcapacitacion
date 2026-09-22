@@ -83,7 +83,7 @@ escritorio.
 levantar sin cambiar el spec):
 
 - **Una sola lista, sin cuentas.** La web (GitHub Pages) habla con un API REST
-  (Express y Prisma, en Render) que guarda las tareas en PostgreSQL (Neon). Hay
+  (Express y Prisma, en Railway) que guarda las tareas en PostgreSQL (Neon). Hay
   una única lista compartida por quien tenga la dirección: sin autenticación,
   sin multiusuario y sin sincronización en tiempo real entre pestañas. Esta
   restricción sustituye a la anterior, "Sin backend", que se levantó a
