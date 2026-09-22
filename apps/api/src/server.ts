@@ -4,7 +4,7 @@ import { crearPrisma } from './db.ts'
 
 // En Render el puerto lo asigna la plataforma por PORT; en desarrollo se usa
 // 3000 para no chocar con Vite (5173).
-const puerto = Number(process.env.PORT ?? 3000)
+const puerto: number = process.env.PORT ?? 3000
 const origenesPermitidos = leerOrigenesPermitidos(process.env.CORS_ORIGINS)
 const prisma = crearPrisma(process.env.DATABASE_URL)
 
