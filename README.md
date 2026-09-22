@@ -1,6 +1,6 @@
 # Capacitación IDR Consulting
 
-**Aplicación publicada:** _(pendiente — se completa al publicar en GitHub Pages)_
+**Aplicación publicada:** <https://ragudc1984.github.io/idrconsultingcapacitacion/>
 
 Ejercicio de capacitación en **desarrollo spec-driven** para el equipo de IDR
 Consulting. La lista de tareas es el vehículo; el producto real es el proceso.

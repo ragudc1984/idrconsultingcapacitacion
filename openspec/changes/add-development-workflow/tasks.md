@@ -54,7 +54,7 @@
 
 - [x] 6.1 **[manual]** Habilitar GitHub Pages en el repositorio con origen en GitHub Actions, y verificar que la configuración queda activa
 - [x] 6.2 Configurar la ruta base del sitio para que los assets carguen bajo `/idrconsultingcapacitacion/` y no en la raíz (con la base por defecto, GitHub Pages devuelve 404 en todos los assets y la página queda en blanco sin error visible), y verificar localmente con `npm run preview` que los assets cargan bajo esa ruta
-- [ ] 6.3 Crear `.github/workflows/ci.yml` (en cada pull request contra `main`: `npm ci`, `npm run build`, `npm run lint` —los mismos comandos que `verify`) y `.github/workflows/deploy.yml` (en cada push a `main`: los mismos pasos y, solo si pasan, publicar `dist/` en GitHub Pages), verificar que ambos son YAML válido, e integrarlos por pull request confirmando que `ci` se ejecuta en ese mismo pull request
+- [x] 6.3 Crear `.github/workflows/ci.yml` (en cada pull request contra `main`: `npm ci`, `npm run build`, `npm run lint` —los mismos comandos que `verify`) y `.github/workflows/deploy.yml` (en cada push a `main`: los mismos pasos y, solo si pasan, publicar `dist/` en GitHub Pages), verificar que ambos son YAML válido, e integrarlos por pull request confirmando que `ci` se ejecuta en ese mismo pull request
 - [ ] 6.4 **[manual]** Publicar la aplicación (la publicación ocurre al integrar `release-0.1.0` en `main`, tarea 9.6) y verificar abriendo `https://ragudc1984.github.io/idrconsultingcapacitacion/` desde otro dispositivo, sin el proyecto instalado, que la lista de tareas carga y es usable
 - [ ] 6.5 Escribir la dirección pública definitiva al inicio del `README.md` y verificar que el enlace abre la aplicación
 - [ ] 6.6 Verificar que lo publicado refleja la rama principal: integrar en `main` un cambio visible mediante una release o un hotfix, esperar la publicación, y confirmar que la dirección pública lo muestra
@@ -66,13 +66,13 @@
 
 - [x] 7.1 **[manual]** Configurar la protección de `main` exigiendo pull request y comprobaciones en verde antes de integrar, y verificar que la configuración queda guardada
 - [x] 7.2 Verificar que el push directo queda rechazado: intentar empujar un commit directamente a `main` y confirmar que el remoto lo rechaza, dejando el intento sin efecto
-- [ ] 7.3 Verificar el flujo completo de integración con Gitflow: crear una rama `feature-*` desde `develop`, empujarla, abrir un pull request contra `develop`, esperar las comprobaciones, e integrarlo
+- [x] 7.3 Verificar el flujo completo de integración con Gitflow: crear una rama `feature-*` desde `develop`, empujarla, abrir un pull request contra `develop`, esperar las comprobaciones, e integrarlo
 
 ## 8. Coincidencia entre la verificación local y la automatización
 
 - [x] 8.1 Comparar paso a paso el script `verify` con el workflow de integración continua y confirmar que ejecutan los mismos comandos, ajustando `verify` si difieren
 - [x] 8.2 Verificar la coincidencia en la práctica: abrir un pull request con un cambio que pasa `npm run verify` localmente y confirmar que la automatización remota también pasa
-- [ ] 8.3 Verificar el caso contrario: abrir un pull request con un cambio que falla `npm run verify` localmente y confirmar que la automatización remota también falla, comprobando que la señal local no da falsos positivos. La rama de prueba sale de `develop` con los workflows ya integrados: un primer intento desde `main`, sin `ci.yml`, no ejecutó ninguna comprobación y no cuenta
+- [x] 8.3 Verificar el caso contrario: abrir un pull request con un cambio que falla `npm run verify` localmente y confirmar que la automatización remota también falla, comprobando que la señal local no da falsos positivos. La rama de prueba sale de `develop` con los workflows ya integrados: un primer intento desde `main`, sin `ci.yml`, no ejecutó ninguna comprobación y no cuenta
 
 ## 9. Gitflow y nomenclatura de ramas
 
