@@ -1,6 +1,6 @@
 import { Sparkle } from 'lucide-react'
 import TaskItem from './TaskItem'
-import type { Task } from '../types'
+import type { Task } from '@idr/shared'
 
 interface TaskListProps {
   tasks: Task[]

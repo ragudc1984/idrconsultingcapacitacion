@@ -4,7 +4,7 @@ import TaskForm from './components/TaskForm'
 import TaskList from './components/TaskList'
 import ThemeToggle from './components/ThemeToggle'
 import { createTaskId, loadTasks, saveTasks } from './storage'
-import type { Task } from './types'
+import type { Task } from '@idr/shared'
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>(loadTasks)

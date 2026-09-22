@@ -22,9 +22,12 @@
 
 ## 2. Paquete compartido de tipos y validación
 
-- [ ] 2.1 Crear `packages/shared` con su `package.json` y `tsconfig.json`, exportando el tipo `Task` (`id`, `title`, `done`) movido desde `apps/web/src/types.ts`, y verificar que `npm run build` desde la raíz compila con el tipo resuelto desde el paquete
-- [ ] 2.2 Añadir `zod` a `packages/shared` y exportar `MAX_TITLE_LENGTH = 200` junto al esquema de validación de título (no vacío tras recortar espacios, máximo 200 caracteres) y a los esquemas de creación y actualización de tarea, y verificar que `npm run build` compila
-- [ ] 2.3 Sustituir en `apps/web` los usos de `MAX_TITLE_LENGTH` y del tipo `Task` por los del paquete compartido, y verificar que `npm run build` y `npx oxlint` pasan y que la app sigue funcionando con `npm run dev`
+- [x] 2.1 Crear `packages/shared` con su `package.json` y `tsconfig.json`, exportando el tipo `Task` (`id`, `title`, `done`) movido desde `apps/web/src/types.ts`, y verificar que `npm run build` desde la raíz compila con el tipo resuelto desde el paquete
+  > `@idr/shared` exporta su TypeScript sin compilar (`exports: ./src/index.ts`): Vite lo empaqueta y tsx lo ejecutará en el API, así que no hay orden de build entre workspaces, y su `build` solo comprueba tipos. Comprobado que `Task` se resuelve de verdad y no como `any`: asignar `id: 1` da `TS2322`.
+- [x] 2.2 Añadir `zod` a `packages/shared` y exportar `MAX_TITLE_LENGTH = 200` junto al esquema de validación de título (no vacío tras recortar espacios, máximo 200 caracteres) y a los esquemas de creación y actualización de tarea, y verificar que `npm run build` compila
+  > `Task` se deriva del esquema con `z.infer`. Probados con tsx 16 casos: vacío, solo espacios, ausente, no texto, 200 y 201 caracteres, recorte antes de medir, `id` del cliente descartado, actualización parcial y vacía. Todos dan lo esperado, con mensajes en español.
+- [x] 2.3 Sustituir en `apps/web` los usos de `MAX_TITLE_LENGTH` y del tipo `Task` por los del paquete compartido, y verificar que `npm run build` y `npx oxlint` pasan y que la app sigue funcionando con `npm run dev`
+  > Verificada con Playwright contra `npm run dev`: el recorrido completo pasa, los dos campos siguen limitados a 200 caracteres y no hay errores en consola. El CSS construido no cambió (17.228 bytes).
 
 ## 3. API: esqueleto y base de datos
 
