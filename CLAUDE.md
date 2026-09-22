@@ -16,12 +16,20 @@ El idioma del proyecto, del código y de los comentarios es **español**.
 
 ## Comandos
 
+Monorepo con npm workspaces. Todo se ejecuta desde la raíz:
+
 ```bash
-npm run dev      # servidor de desarrollo (Vite)
-npm run build    # tsc -b && vite build
-npm run lint     # oxlint
-npx tsc -b --force   # forzar recomprobación de tipos (usa project references)
+npm run dev                 # web (Vite, puerto 5173)
+npm run dev -w @idr/api     # API (tsx watch, puerto 3000; lee apps/api/.env)
+npm run build               # todos los workspaces: prisma generate + tsc, tsc + vite build
+npm run lint                # oxlint sobre todo el repositorio
+npm run verify              # npm ci + build + lint: la puerta antes de empujar
+npx tsc -b --force          # dentro de apps/web: forzar recomprobación de tipos
 ```
+
+Variables de entorno: `apps/api/.env` (`DATABASE_URL`, `PORT`, `CORS_ORIGINS`) y
+`apps/web/.env.local` (`VITE_API_URL`). Los dos tienen su `.env.example`
+versionado; los reales están en `.gitignore` y nunca se commitean.
 
 **No hay runner de tests ni archivos de test.** No existe `npm test`; no lo
 inventes, y no crees una suite. La verificación en este repo es: `npm run build`
@@ -47,8 +55,8 @@ Ojo con los falsos negativos: la instrumentación puede fallar de forma tan
 convincente como un defecto real. Ante un fallo, comprueba primero el script con
 un diagnóstico acotado antes de tocar el código de la aplicación.
 
-El `README.md` es la plantilla de Vite sin modificar. Lo único aprovechable es su
-nota sobre habilitar reglas type-aware de oxlint instalando `oxlint-tsgolint`.
+El `README.md` documenta la puesta en marcha, la puerta de verificación y el
+flujo de ramas (Gitflow con nomenclatura `feature-*`, `hotfix-*`, `release-*`).
 
 ## Las tres autoridades
 
@@ -84,26 +92,40 @@ se dejan sin marcar y se dice por qué.
 
 ## Arquitectura
 
+### Tres workspaces
+
+- `apps/web` (`@idr/web`): la interfaz. React, Vite y Tailwind.
+- `apps/api` (`@idr/api`): Express 5 ejecutado con `tsx`, y Prisma 7 con el
+  adaptador de `pg` contra PostgreSQL (Neon). Errores con forma uniforme
+  `{ error: { codigo, mensaje } }` y CORS con lista blanca (`CORS_ORIGINS`;
+  el comodín impide arrancar).
+- `packages/shared` (`@idr/shared`): el tipo `Task`, `MAX_TITLE_LENGTH` y los
+  esquemas de zod. La regla del título se escribe **una vez** y la aplican los
+  dos lados. Exporta TypeScript sin compilar para no imponer un orden de build.
+
+El `id` de una tarea lo genera PostgreSQL (`gen_random_uuid()`), nunca el
+cliente.
+
 ### Un único dueño del estado
 
-`src/App.tsx` posee todo el estado. Los componentes son presentacionales salvo el
-estado local de edición en `TaskItem`.
+`apps/web/src/App.tsx` posee todo el estado. Los componentes son
+presentacionales salvo el estado local de edición en `TaskItem`.
 
-La pieza a entender es **`commitTasks(next, message)`** en `App.tsx`: es el único
-punto de escritura. Fija el estado, persiste en `localStorage` y emite el anuncio
-para el lector de pantalla en la misma operación, de modo que estado y
-almacenamiento no puedan divergir y un fallo de cuota se reporte en el momento de
-la acción que lo provocó. **No añadas escrituras a `localStorage` fuera de ahí**,
-ni lo vuelvas a mover a un `useEffect` — estuvo así y se quitó a propósito.
+La pieza a entender es **`commitTasks`** en `App.tsx`: es el único punto de
+escritura, y es asíncrono. Ejecuta la operación contra el API y **sólo con la
+respuesta exitosa** fija la lista —con lo que devolvió el servidor— y emite el
+anuncio para el lector de pantalla. Si falla, la lista no cambia y el anuncio
+dice que no se guardó. No hay actualización optimista: es un non-goal. **No
+añadas escrituras al API fuera de ahí**; la única llamada fuera es la lectura
+inicial. Las acciones en curso se registran por `id` de tarea en una ref, que
+bloquea el doble click dentro del mismo ciclo de render.
 
-`src/storage.ts` valida cada elemento por separado al cargar: un `localStorage`
-corrupto no debe producir filas sin `id` imposibles de borrar. `createTaskId()`
-tiene fallback porque `crypto.randomUUID` no existe fuera de contexto seguro, que
-es justo como se prueba desde el móvil por IP local.
+La lista es una unión de tres formas (`cargando`, `error`, `lista`): así el
+estado vacío no puede pintarse mientras las tareas vienen en camino.
 
 ### Tres temas, todos por tokens
 
-`src/index.css` es la **única** fuente de color. Define custom properties en
+`apps/web/src/index.css` es la **única** fuente de color. Define custom properties en
 `:root`, las remapea en `.dark` y las vuelve a remapear en `@media print`.
 
 - **Cero colores literales en los componentes.** Todo pasa por `var(--token)`.
@@ -121,6 +143,8 @@ son — una refactorización podría deshacerlas sin darse cuenta:
 
 - El foco usa **`outline` sólido, nunca `box-shadow`**: el halo translúcido medía
   1.24:1 y `box-shadow` no se pinta en el modo de alto contraste de Windows.
+- Un control en espera usa **`aria-disabled`, nunca `disabled`**: `disabled`
+  le quita el foco y lo manda al `<body>`.
 - Los objetivos táctiles crecen con **`@media (pointer: coarse)`**, no por ancho
   de pantalla: hay portátiles táctiles y tabletas con teclado.
 - `prefers-reduced-motion` recibe **una alternativa**, no `animation: none`. El
@@ -132,7 +156,7 @@ son — una refactorización podría deshacerlas sin darse cuenta:
 ## Gotchas
 
 **Tailwind v4 sin archivo de configuración.** Los tokens viven en `@theme` dentro
-de `src/index.css`. Los orígenes de contenido están en lista blanca explícita:
+de `apps/web/src/index.css`. Los orígenes de contenido están en lista blanca explícita:
 
 ```css
 @import "tailwindcss" source(none);
@@ -140,7 +164,8 @@ de `src/index.css`. Los orígenes de contenido están en lista blanca explícita
 @source "./**/*.{ts,tsx}";
 ```
 
-Consecuencia: **markup colocado fuera de `index.html` y `src/` no se escanea** y
+Las rutas son relativas a `index.css`. Consecuencia: **markup colocado fuera de
+`apps/web/index.html` y `apps/web/src/` no se escanea** y
 sus estilos faltarán sin error. Cualquier ubicación nueva de componentes tiene que
 agregar su propia directiva `@source`.
 
@@ -149,9 +174,20 @@ de un archivo escaneado. Escribir la palabra "visible" o "blur" en un comentario
 de un `.tsx` genera `.visible` y `.blur` en el CSS de producción. Ya pasó dos
 veces. Si el CSS crece tras un cambio que no tocó estilos, es esto.
 
-**Archivar un cambio puede fallar con EPERM en Windows** si hay un servidor de dev
-vivo: su watcher mantiene un handle sobre `openspec/`. Matar el proceso de npm no
-siempre mata el hijo de Vite.
+**Los servidores de desarrollo dejan procesos huérfanos en Windows.** Matar el
+proceso que escucha en el puerto no mata a su padre: `tsx watch` (API) y Vite
+siguen vivos y relanzan el servidor con el próximo cambio de archivo. Mata el
+árbol completo. Un servidor vivo hace fallar con `EPERM` tanto el archivo de un
+cambio (su watcher retiene `openspec/`) como `npm ci` (Vite retiene un binding
+nativo de `node_modules`).
+
+**El cliente de Prisma se genera; no se versiona.** Vive en
+`apps/api/src/generated/`, fuera de git y de oxlint, y el `build` del API lo
+regenera. Prisma está fijado a propósito en `7.10.0`: la etiqueta `latest` de
+`prisma` en npm apuntó a una RC. Prisma 7 no lee el `.env` por su cuenta;
+`prisma.config.ts` usa `process.loadEnvFile()`. Y `prisma init` instala cientos
+de archivos de "skills" de agentes en la carpeta donde se ejecuta: no lo corras
+dentro del repositorio.
 
 **Al verificar clases de Tailwind en el CSS construido, usa `grep -F`.** Los
 selectores van escapados (`.bg-\[var\(--bg\)\]`) y una expresión regular trata
