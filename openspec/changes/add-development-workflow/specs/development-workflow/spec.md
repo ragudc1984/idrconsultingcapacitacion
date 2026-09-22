@@ -3,9 +3,10 @@
 ## Purpose
 
 Define el ciclo que recorre cada cambio desde el código escrito hasta la versión
-publicada: qué se verifica y en qué orden antes de empujar, cómo se registra e
-integra el trabajo en la rama principal, y dónde queda visible el resultado para
-cualquiera del equipo.
+publicada: qué se verifica y en qué orden antes de empujar, cómo se registra el
+trabajo, cómo se nombran e integran las ramas siguiendo Gitflow, cómo se
+etiqueta cada versión, y dónde queda visible el resultado para cualquiera del
+equipo.
 
 ## ADDED Requirements
 
@@ -82,7 +83,9 @@ La reproducción local del pipeline SHALL ejecutar los mismos pasos que la
 automatización de integración continua ejecuta en el repositorio remoto. Cuando
 esos pasos cambien en la automatización, la reproducción local SHALL actualizarse
 en el mismo cambio, de modo que un resultado local exitoso siga siendo evidencia
-de que la automatización remota va a pasar.
+de que la automatización remota va a pasar. La validación de la nomenclatura de
+ramas queda fuera de la reproducción local, porque depende de los datos del pull
+request (rama de origen y rama de destino), que no existen en la máquina.
 
 #### Scenario: Coincidencia entre local y remoto
 - **WHEN** la reproducción local del pipeline pasa y el trabajo se empuja
@@ -92,19 +95,68 @@ de que la automatización remota va a pasar.
 - **WHEN** se modifica la automatización de integración continua para agregar o quitar un paso
 - **THEN** la reproducción local se actualiza en el mismo cambio para reflejar esos pasos
 
-### Requirement: El trabajo llega a la rama principal por pull request
-Todo cambio SHALL integrarse en la rama principal mediante un pull request desde
-una rama de trabajo, y NO SHALL empujarse directamente a la rama principal. El
-pull request SHALL integrarse únicamente cuando sus comprobaciones automáticas
-estén en verde. La rama principal SHALL llamarse `main`.
+### Requirement: El trabajo se integra siguiendo Gitflow
+El repositorio SHALL tener dos ramas permanentes: `main`, que contiene únicamente
+versiones publicadas, y `develop`, donde se integran las funcionalidades. Toda
+integración en `main` o en `develop` SHALL hacerse mediante un pull request cuyas
+comprobaciones automáticas estén en verde, y NO SHALL empujarse directamente a
+ninguna de las dos. Una funcionalidad SHALL partir de `develop` e integrarse en
+`develop`, y NO SHALL integrarse directamente en `main`. Una release SHALL partir
+de `develop`, integrarse en `main` y después integrarse de vuelta en `develop`.
+Un hotfix SHALL partir de `main`, integrarse en `main` y después integrarse de
+vuelta en `develop`.
 
-#### Scenario: Integración por pull request
-- **WHEN** una persona termina un cambio verificado localmente
-- **THEN** lo empuja a una rama de trabajo, abre un pull request contra `main`, y lo integra solo cuando las comprobaciones están en verde
+#### Scenario: Nueva funcionalidad
+- **WHEN** una persona termina una funcionalidad verificada localmente
+- **THEN** la empuja en una rama `feature-*` creada desde `develop`, abre un pull request contra `develop`, y lo integra solo cuando las comprobaciones están en verde
+
+#### Scenario: Release
+- **WHEN** `develop` reúne las funcionalidades de la siguiente versión
+- **THEN** se crea una rama `release-*` desde `develop`, se integra por pull request en `main`, y después se integra de vuelta en `develop`
+
+#### Scenario: Hotfix
+- **WHEN** se detecta un defecto en la versión publicada
+- **THEN** se corrige en una rama `hotfix-*` creada desde `main`, se integra por pull request en `main`, y después se integra de vuelta en `develop`
 
 #### Scenario: Push directo rechazado
-- **WHEN** una persona intenta empujar un commit directamente a `main`
+- **WHEN** una persona intenta empujar un commit directamente a `main` o a `develop`
 - **THEN** el repositorio remoto rechaza el push
+
+### Requirement: Nomenclatura de ramas
+Las ramas de trabajo SHALL nombrarse según su tipo: `feature-<nombre-funcionalidad>`
+para una funcionalidad nueva, `hotfix-<nombre-issue>` para corregir un defecto de
+la versión publicada, y `release-<X.Y.Z>` para preparar una versión. El nombre
+SHALL escribirse en minúsculas, con las palabras separadas por guiones. La
+automatización SHALL rechazar un pull request cuya rama no respete esta
+nomenclatura o cuya rama de destino no corresponda a su tipo: `feature-*` solo
+hacia `develop`; `release-*` y `hotfix-*` hacia `main` o de vuelta hacia
+`develop`.
+
+#### Scenario: Nombre válido
+- **WHEN** se abre un pull request desde `feature-editar-tareas` contra `develop`
+- **THEN** la validación de nomenclatura pasa
+
+#### Scenario: Nombre inválido
+- **WHEN** se abre un pull request desde una rama que no empieza por `feature-`, `hotfix-` ni `release-`, o que usa mayúsculas o barras
+- **THEN** la validación de nomenclatura falla e indica el formato esperado
+
+#### Scenario: Destino incorrecto
+- **WHEN** se abre un pull request desde una rama `feature-*` contra `main`
+- **THEN** la validación de nomenclatura falla
+
+### Requirement: Cada versión publicada está etiquetada
+Cada integración en `main` SHALL etiquetarse con su número de versión en la forma
+`vX.Y.Z`, siguiendo versionado semántico: una release incrementa la versión menor
+o la mayor, y un hotfix incrementa el parche. La versión declarada en
+`package.json` SHALL coincidir con la de la etiqueta.
+
+#### Scenario: Release etiquetada
+- **WHEN** se integra la rama `release-0.1.0` en `main`
+- **THEN** el commit resultante en `main` lleva la etiqueta `v0.1.0` y `package.json` declara la versión `0.1.0`
+
+#### Scenario: Hotfix incrementa el parche
+- **WHEN** se integra un hotfix en `main` cuando la última versión es `v0.1.0`
+- **THEN** el commit resultante en `main` lleva la etiqueta `v0.1.1`
 
 ### Requirement: La aplicación está publicada y su dirección es localizable
 La aplicación SHALL estar accesible públicamente en internet, sin que quien la

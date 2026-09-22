@@ -160,7 +160,9 @@ build de ambos workspaces. `deploy.yml` corre en push a la rama principal: repit
 lint y build, luego publica. Se repiten a propósito —un workflow de despliegue
 que confía en que otro ya verificó es un despliegue que un día publica algo roto.
 *Nota:* `add-development-workflow` crea ambos en versión mínima (un solo
-proyecto, publicación solo en Pages); este cambio los extiende.
+proyecto, publicación solo en Pages); este cambio los extiende. Aquel cambio
+adoptó además Gitflow: el trabajo de este cambio va en ramas `feature-*` hacia
+`develop`, y se publica al integrar una `release-*` en `main`.
 
 **El despliegue del API se dispara con un deploy hook de Render, y las
 migraciones se ejecutan como comando de pre-deploy del propio servicio, no desde
