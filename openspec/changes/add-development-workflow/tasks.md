@@ -56,8 +56,9 @@
 - [x] 6.2 Configurar la ruta base del sitio para que los assets carguen bajo `/idrconsultingcapacitacion/` y no en la raíz (con la base por defecto, GitHub Pages devuelve 404 en todos los assets y la página queda en blanco sin error visible), y verificar localmente con `npm run preview` que los assets cargan bajo esa ruta
 - [x] 6.3 Crear `.github/workflows/ci.yml` (en cada pull request contra `main`: `npm ci`, `npm run build`, `npm run lint` —los mismos comandos que `verify`) y `.github/workflows/deploy.yml` (en cada push a `main`: los mismos pasos y, solo si pasan, publicar `dist/` en GitHub Pages), verificar que ambos son YAML válido, e integrarlos por pull request confirmando que `ci` se ejecuta en ese mismo pull request
 - [ ] 6.4 **[manual]** Publicar la aplicación (la publicación ocurre al integrar `release-0.1.0` en `main`, tarea 9.6) y verificar abriendo `https://ragudc1984.github.io/idrconsultingcapacitacion/` desde otro dispositivo, sin el proyecto instalado, que la lista de tareas carga y es usable
-- [ ] 6.5 Escribir la dirección pública definitiva al inicio del `README.md` y verificar que el enlace abre la aplicación
-- [ ] 6.6 Verificar que lo publicado refleja la rama principal: integrar en `main` un cambio visible mediante una release o un hotfix, esperar la publicación, y confirmar que la dirección pública lo muestra
+- [x] 6.5 Escribir la dirección pública definitiva al inicio del `README.md` y verificar que el enlace abre la aplicación
+- [x] 6.6 Verificar que lo publicado refleja la rama principal: integrar en `main` un cambio visible mediante una release o un hotfix, esperar la publicación, y confirmar que la dirección pública lo muestra
+  > Verificada con la primera publicación (`release-0.1.0`, commit `de0a011`, etiqueta `v0.1.0`): antes de integrar, la dirección pública devolvía 404; después, sirve los mismos assets que un build local de ese commit (`index-C1DMje6B.js`, `index-w5iJ4cxp.css`) y la lista funciona. Límite: prueba que lo publicado es `main`, pero el cambio visible fue la aparición del sitio, no una modificación de la app ya publicada. La próxima release o hotfix lo confirma en ese sentido.
 
 ## 7. Protección de la rama principal
 
