@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-19T19:43:57.758547-05:00",
+  "generatedAt": "2026-09-22T02:30:39.171Z",
   "title": "Design System: Capacitación IDR Consulting",
   "extensions": {
     "colorMeta": {
@@ -447,7 +447,7 @@
       "name": "Botón fantasma",
       "kind": "button",
       "refersTo": "button-ghost",
-      "description": "Acción secundaria del diálogo. Sin relleno ni borde.",
+      "description": "Acción secundaria: cancelar en el diálogo y reintentar tras un fallo de carga. Sin relleno ni borde.",
       "html": "<button class=\"ds-btn-ghost\">Cancelar</button>",
       "css": ".ds-btn-ghost{font-family:Inter,ui-sans-serif,system-ui,sans-serif;border:none;cursor:pointer;transition:color .15s cubic-bezier(.4,0,.2,1),box-shadow .15s cubic-bezier(.4,0,.2,1),background-color .15s cubic-bezier(.4,0,.2,1);outline:2px solid transparent;outline-offset:2px;display:inline-flex;align-items:center;justify-content:center;padding:.5rem 1rem;border-radius:9999px;background:transparent;color:var(--text-muted,#626b7a);font-size:1rem;}.ds-btn-ghost:hover{color:var(--violet,#6650e2);box-shadow:0 0 12px var(--violet-glow,rgba(102,80,226,.28));}.ds-btn-ghost:focus-visible{outline-color:var(--ring-violet,#6650e2);}@media (pointer:coarse){.ds-btn-ghost{min-height:2.75rem;}}"
     },
@@ -490,6 +490,38 @@
       "description": "Mismo radio que el diálogo, tratamiento invertido: sin relleno y con borde punteado.",
       "html": "<div class=\"ds-empty\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.75\" aria-hidden=\"true\"><path d=\"M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z\"/></svg><p class=\"ds-empty__title\">Todavía no hay tareas.</p><p class=\"ds-empty__hint\">Agrega la primera arriba para empezar.</p></div>",
       "css": ".ds-empty{font-family:Inter,ui-sans-serif,system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:2.5rem 1.5rem;text-align:center;border:1px dashed var(--border,#c8cad3);border-radius:.5rem;color:var(--violet,#6650e2);}.ds-empty__title{margin:0;color:var(--text,#12151c);font-size:1rem;}.ds-empty__hint{margin:0;color:var(--text-muted,#626b7a);font-size:.875rem;}"
+    },
+    {
+      "name": "Estado de carga",
+      "kind": "card",
+      "refersTo": "state-loading",
+      "description": "Ocupa el lugar de la lista mientras llegan las tareas. Anatomía del estado vacío sin ningún borde; la línea atenuada aparece si la espera pasa de 4 s.",
+      "html": "<div class=\"ds-loading\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.75\" aria-hidden=\"true\"><path d=\"M21 12a9 9 0 1 1-6.219-8.56\"/></svg><p class=\"ds-loading__title\">Cargando tareas…</p><p class=\"ds-loading__hint\">El servicio puede tardar hasta un minuto en responder si estuvo inactivo. Tus tareas no se perdieron.</p></div>",
+      "css": ".ds-loading{font-family:Inter,ui-sans-serif,system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:2.5rem 1.5rem;text-align:center;color:var(--text-muted,#626b7a);}.ds-loading__title{margin:0;color:var(--text,#12151c);font-size:1rem;}.ds-loading__hint{margin:0;color:var(--text-muted,#626b7a);font-size:.875rem;}"
+    },
+    {
+      "name": "Error de carga",
+      "kind": "card",
+      "refersTo": "notice-danger",
+      "description": "Sustituye a la lista cuando no se pudieron cargar las tareas. Curva suave, borde de 1px en Magenta Corte y el botón fantasma de reintentar.",
+      "html": "<div class=\"ds-load-error\"><div class=\"ds-load-error__text\"><p class=\"ds-load-error__title\">No se pudieron cargar las tareas.</p><p class=\"ds-load-error__detail\">No se pudo conectar con el servicio de tareas. Revisa tu conexión e inténtalo de nuevo.</p></div><button class=\"ds-btn-retry\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/></svg>Reintentar</button></div>",
+      "css": ".ds-load-error{font-family:Inter,ui-sans-serif,system-ui,sans-serif;display:flex;flex-direction:column;align-items:flex-start;gap:.75rem;padding:.75rem 1rem;border:1px solid var(--danger,#c1008d);border-radius:.5rem;}.ds-load-error__text{display:flex;flex-direction:column;gap:.25rem;}.ds-load-error__title{margin:0;color:var(--text,#12151c);font-size:1rem;}.ds-load-error__detail{margin:0;color:var(--text-muted,#626b7a);font-size:.875rem;}.ds-btn-retry{font-family:Inter,ui-sans-serif,system-ui,sans-serif;border:none;cursor:pointer;transition:color .15s cubic-bezier(.4,0,.2,1),box-shadow .15s cubic-bezier(.4,0,.2,1),background-color .15s cubic-bezier(.4,0,.2,1);outline:2px solid transparent;outline-offset:2px;display:inline-flex;align-items:center;justify-content:center;border-radius:9999px;background:transparent;gap:.5rem;padding:.5rem 1rem;color:var(--text-muted,#626b7a);font-size:1rem;}.ds-btn-retry:hover{color:var(--violet,#6650e2);box-shadow:0 0 12px var(--violet-glow,rgba(102,80,226,.28));}.ds-btn-retry:focus-visible{outline-color:var(--ring-violet,#6650e2);}@media (pointer:coarse){.ds-btn-retry{min-height:2.75rem;}}"
+    },
+    {
+      "name": "Aviso de fallo al guardar",
+      "kind": "card",
+      "refersTo": "notice-danger",
+      "description": "Aparece sobre el formulario cuando una acción no se guardó; desaparece con la siguiente que sí. Se oculta en impresión.",
+      "html": "<p class=\"ds-save-error\">No se pudo completar la tarea «Revisar el informe mensual». No se pudo conectar con el servicio de tareas. Revisa tu conexión e inténtalo de nuevo.</p>",
+      "css": ".ds-save-error{font-family:Inter,ui-sans-serif,system-ui,sans-serif;margin:0;padding:.75rem 1rem;border:1px solid var(--danger,#c1008d);border-radius:.5rem;color:var(--text,#12151c);font-size:.875rem;}@media print{.ds-save-error{display:none;}}"
+    },
+    {
+      "name": "Botón de ícono en curso",
+      "kind": "button",
+      "refersTo": "button-icon",
+      "description": "Una acción esperando al servidor: el ícono se cambia por el de carga, estático, con cursor progress y sin halo. Conserva forma, color y foco.",
+      "html": "<button class=\"ds-btn-busy\" aria-busy=\"true\" aria-disabled=\"true\" aria-label=\"Completar tarea: Revisar el informe mensual\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M21 12a9 9 0 1 1-6.219-8.56\"/></svg></button>",
+      "css": ".ds-btn-busy{font-family:Inter,ui-sans-serif,system-ui,sans-serif;border:none;cursor:pointer;transition:color .15s cubic-bezier(.4,0,.2,1),box-shadow .15s cubic-bezier(.4,0,.2,1),background-color .15s cubic-bezier(.4,0,.2,1);outline:2px solid transparent;outline-offset:2px;display:inline-flex;align-items:center;justify-content:center;border-radius:9999px;background:transparent;padding:.375rem;color:var(--text-muted,#626b7a);cursor:progress;}.ds-btn-busy:focus-visible{outline-color:var(--ring-cyan,#0a7366);}@media (pointer:coarse){.ds-btn-busy{min-width:2.75rem;min-height:2.75rem;}}"
     }
   ],
   "narrative": {
@@ -572,6 +604,11 @@
         "name": "La Regla del Presupuesto de 300 ms",
         "body": "Ninguna animación de interfaz supera los 300ms, y la entrada de una tarea vive en 200ms porque crear es la acción más repetida de la aplicación. Sólo opacity y transform componen: el halo se anima por opacidad sobre un pseudo-elemento, nunca como box-shadow.",
         "section": "elevation"
+      },
+      {
+        "name": "La Regla de la Espera Quieta",
+        "body": "Esperar no se anima. El indicador de carga y el de acción en curso son estáticos: un ícono que gira indefinidamente rompe el Presupuesto de 300 ms, y la señal —ícono, cursor y texto— se entiende igual con o sin `prefers-reduced-motion`, porque no hay movimiento que sustituir.",
+        "section": "components"
       }
     ],
     "dos": [
@@ -581,7 +618,8 @@
       "Do hacer crecer los objetivos táctiles con pointer: coarse hasta 2.75rem, sin cambiar el tamaño del ícono.",
       "Do dar a prefers-reduced-motion una alternativa que conserve el cambio de estado, no un apagado global.",
       "Do acompañar todo color con ícono, posición o texto. El color nunca informa solo.",
-      "Do dar a cada rol de color una respuesta en los tres temas. En impresión, casi siempre es desaparecer o volverse tinta."
+      "Do dar a cada rol de color una respuesta en los tres temas. En impresión, casi siempre es desaparecer o volverse tinta.",
+      "Do mostrar una acción en curso cambiando el ícono del control por el de carga, estático, con cursor `progress` y sin halo."
     ],
     "donts": [
       "Don't derivar un tema del otro sumando o restando brillo. Es el defecto que dejó el botón primario a 1.96:1.",
@@ -593,7 +631,8 @@
       "Don't escribir colores literales en los componentes. Todo pasa por token; hoy no queda ni uno suelto.",
       "Don't redeclarar en body lo que el remapeo de tokens ya resuelve. El tema de impresión cambia los tokens; el resto se hereda solo.",
       "Don't animar box-shadow, width, height ni propiedades de posición. Sólo opacity y transform componen.",
-      "Don't añadir un radio nuevo. Píldora si se pulsa, 0.5rem si contiene, línea si se escribe."
+      "Don't añadir un radio nuevo. Píldora si se pulsa, 0.5rem si contiene, línea si se escribe.",
+      "Don't hacer girar un indicador de carga ni darle al estado de carga el borde punteado del estado vacío."
     ]
   }
 }
