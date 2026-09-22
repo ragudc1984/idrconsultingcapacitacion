@@ -1,18 +1,20 @@
-# Publicacion: en cada push a main repite la puerta de verificacion y, solo si
-# pasa, publica apps/web/dist/ en GitHub Pages y dispara el despliegue del API
-# en Render. Repite los pasos de ci.yml a proposito: un despliegue que confia en
-# que otro workflow ya verifico es un despliegue que un dia publica algo roto.
+# Publicacion de la web: se dispara cuando Railway informa a GitHub que un
+# despliegue del API termino bien (evento deployment_status, estado success).
+# Construye y verifica la web del mismo commit que Railway desplego y la
+# publica en GitHub Pages. Si el despliegue del API falla, Railway no informa
+# success, este workflow no corre y la web anterior sigue publicada.
 #
 # Configuracion del repositorio (Settings > Secrets and variables > Actions):
 # - variable API_URL: direccion publica del API. No es secreta; queda escrita
 #   en el JavaScript de la web.
-# - secreto RENDER_DEPLOY_HOOK_URL: la URL del deploy hook de Render. Quien la
-#   tiene puede redesplegar el API, por eso es secreta.
-name: deploy
+#
+# El API lo despliega Railway desde main (integracion con GitHub y "Wait for
+# CI"). Su build, arranque, migracion (pre-deploy) y chequeo de salud estan en
+# railway.json, versionados junto al codigo.
+name: publicar-web
 
 on:
-  push:
-    branches: [main]
+  deployment_status:
 
 permissions:
   contents: read
@@ -27,11 +29,26 @@ concurrency:
 
 jobs:
   construir:
+    # Solo despliegues exitosos del entorno de produccion de Railway. El nombre
+    # del entorno que informa Railway puede llevar el del proyecto delante, por
+    # eso se busca "production" dentro del nombre.
+    if: >-
+      github.event.deployment_status.state == 'success' &&
+      contains(github.event.deployment.environment, 'production')
     runs-on: ubuntu-latest
     env:
       VITE_API_URL: ${{ vars.API_URL }}
     steps:
+      - name: Despliegue que dispara la publicacion
+        env:
+          ENTORNO: ${{ github.event.deployment.environment }}
+          COMMIT: ${{ github.event.deployment.sha }}
+          REF: ${{ github.event.deployment.ref }}
+        run: echo "Railway desplego $COMMIT (ref $REF) en $ENTORNO."
+
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment.sha }}
 
       - uses: actions/setup-node@v4
         with:
@@ -61,11 +78,8 @@ jobs:
         with:
           path: apps/web/dist
 
-  # Despues del API y no en paralelo: si falla el disparo del despliegue del
-  # API, la web anterior sigue publicada. Publicarlas a la vez dejo en la 0.3.0
-  # una web nueva apuntando a un API que nunca se desplego.
-  publicar-web:
-    needs: [construir, desplegar-api]
+  publicar:
+    needs: construir
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -73,21 +87,3 @@ jobs:
     steps:
       - id: despliegue
         uses: actions/deploy-pages@v4
-
-  # Render construye el API desde main y aplica las migraciones al final de su
-  # comando de build; si algo falla, sigue sirviendo la version anterior. Su
-  # auto-deploy esta apagado: este hook es el unico disparador.
-  desplegar-api:
-    needs: construir
-    runs-on: ubuntu-latest
-    steps:
-      - name: Disparar el deploy hook de Render
-        env:
-          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
-        run: |
-          if [ -z "$HOOK" ]; then
-            echo "::error::Falta el secreto RENDER_DEPLOY_HOOK_URL del repositorio."
-            exit 1
-          fi
-          curl --fail --silent --show-error --output /dev/null --request POST "$HOOK"
-          echo "Despliegue del API solicitado a Render."
