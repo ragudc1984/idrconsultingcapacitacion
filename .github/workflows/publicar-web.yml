@@ -1,8 +1,17 @@
-# Publicacion de la web: se dispara cuando Railway informa a GitHub que un
-# despliegue del API termino bien (evento deployment_status, estado success).
-# Construye y verifica la web del mismo commit que Railway desplego y la
-# publica en GitHub Pages. Si el despliegue del API falla, Railway no informa
-# success, este workflow no corre y la web anterior sigue publicada.
+# Publicacion de la web, en dos tiempos:
+#
+# 1. Railway informa a GitHub que un despliegue del API termino bien (evento
+#    deployment_status, estado success, entorno de produccion). El job
+#    `reenviar` no publica: relanza este mismo workflow sobre main con
+#    workflow_dispatch, pasando el commit que Railway desplego.
+# 2. Esa ejecucion (workflow_dispatch en main) comprueba que el commit
+#    pertenezca a main, construye y verifica la web y la publica en Pages.
+#
+# Publicar directamente desde el evento deployment_status fallaba con un 500
+# de la API de Pages en cada intento, sin incidente de GitHub; las
+# publicaciones desde una ejecucion normal sobre main siempre funcionaron. Si
+# el despliegue del API falla, Railway no informa success, nada se relanza y
+# la web anterior sigue publicada.
 #
 # Configuracion del repositorio (Settings > Secrets and variables > Actions):
 # - variable API_URL: direccion publica del API. No es secreta; queda escrita
@@ -15,40 +24,65 @@ name: publicar-web
 
 on:
   deployment_status:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Commit de main que Railway desplego
+        required: true
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-# Una publicacion a la vez; la que esta en curso termina en vez de cancelarse,
-# para no dejar el sitio a medio publicar.
-concurrency:
-  group: pages
-  cancel-in-progress: false
 
 jobs:
-  construir:
+  reenviar:
     # Solo despliegues exitosos del entorno de produccion de Railway. El nombre
-    # del entorno que informa Railway puede llevar el del proyecto delante, por
-    # eso se busca "production" dentro del nombre.
+    # que informa Railway lleva el del proyecto delante ("<proyecto> /
+    # production"), por eso se busca "production" dentro del nombre.
     if: >-
+      github.event_name == 'deployment_status' &&
       github.event.deployment_status.state == 'success' &&
       contains(github.event.deployment.environment, 'production')
     runs-on: ubuntu-latest
-    env:
-      VITE_API_URL: ${{ vars.API_URL }}
+    permissions:
+      actions: write
     steps:
-      - name: Despliegue que dispara la publicacion
+      # workflow_dispatch es de los pocos eventos que el token del propio
+      # workflow puede disparar. Los valores llegan por variables de entorno.
+      - name: Relanzar la publicacion sobre main
         env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
           ENTORNO: ${{ github.event.deployment.environment }}
           COMMIT: ${{ github.event.deployment.sha }}
-          REF: ${{ github.event.deployment.ref }}
-        run: echo "Railway desplego $COMMIT (ref $REF) en $ENTORNO."
+        run: |
+          echo "Railway desplego $COMMIT en $ENTORNO."
+          gh workflow run publicar-web.yml --repo "$REPO" --ref main -f commit="$COMMIT"
 
+  construir:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      VITE_API_URL: ${{ vars.API_URL }}
+      COMMIT: ${{ inputs.commit }}
+    steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.deployment.sha }}
+          fetch-depth: 0
+
+      # Solo se publica codigo que ya esta en main: un commit de otra rama no
+      # llega a la web aunque alguien dispare este workflow a mano.
+      - name: Comprobar que el commit pertenece a main
+        run: |
+          if ! [[ "$COMMIT" =~ ^[0-9a-f]{7,40}$ ]]; then
+            echo "::error::'$COMMIT' no es un identificador de commit."
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$COMMIT" origin/main; then
+            echo "::error::El commit $COMMIT no pertenece a main."
+            exit 1
+          fi
+          git checkout --quiet "$COMMIT"
+          echo "Publicando $COMMIT."
 
       - uses: actions/setup-node@v4
         with:
@@ -81,6 +115,14 @@ jobs:
   publicar:
     needs: construir
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    # Una publicacion a la vez; la que esta en curso termina en vez de
+    # cancelarse, para no dejar el sitio a medio publicar.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.despliegue.outputs.page_url }}
