@@ -1,0 +1,28 @@
+// Esquema de la base de datos del API de tareas. Las migraciones que salen de
+// aqui (prisma/migrations/) se versionan: son artefactos del repositorio, y el
+// despliegue las aplica antes de servir la version nueva.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+// La URL de conexion vive en prisma.config.ts, leida de DATABASE_URL.
+datasource db {
+  provider = "postgresql"
+}
+
+model Task {
+  // Lo genera PostgreSQL, no el cliente: un id enviado en la peticion no
+  // tiene por donde llegar a la base.
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  // El tope de 200 lo valida el esquema compartido; la columna lo repite como
+  // ultima barrera.
+  title     String   @db.VarChar(200)
+  done      Boolean  @default(false)
+  // No se muestra, pero sostiene el requisito de listar en orden de creacion.
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([createdAt, id])
+  @@map("tasks")
+}

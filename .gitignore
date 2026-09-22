@@ -34,3 +34,7 @@ dist-ssr
 # por maquina (frente a `settings.json`, que si se comparte), y este contiene
 # rutas absolutas de un equipo concreto que no existen en los demas.
 .claude/settings.local.json
+
+# Cliente de Prisma generado a partir de apps/api/prisma/schema.prisma. Se
+# regenera en cada build (`prisma generate`); versionarlo lo desincroniza.
+apps/api/src/generated/
