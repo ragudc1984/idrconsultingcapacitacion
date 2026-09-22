@@ -8,12 +8,17 @@
 
 ## 1. Reorganizar el repositorio a workspaces (sin cambiar comportamiento)
 
-- [ ] 1.1 Convertir el `package.json` de la raíz en manifiesto de workspaces (`workspaces: ["apps/*", "packages/*"]`, `private: true`), moviendo las dependencias y los scripts actuales a `apps/web/package.json`, y verificar que `npm install` desde la raíz termina sin errores y genera un único `package-lock.json`
-- [ ] 1.2 Mover `src/`, `index.html`, `public/`, `vite.config.ts` y los `tsconfig*.json` a `apps/web/`, ajustando las rutas relativas de los `tsconfig` y de `vite.config.ts`, y verificar que `npm run build -w apps/web` compila sin errores
-- [ ] 1.3 Reescribir las directivas `@source` de `apps/web/src/index.css` para las rutas nuevas, y verificar con `grep -F '.bg-\[var\(--bg\)\]' apps/web/dist/assets/*.css` que la clase sigue presente en el CSS construido (con `-F`, no regex: los selectores van escapados — `CLAUDE.md` — Gotchas)
-- [ ] 1.4 Añadir scripts de raíz `build`, `lint` y `dev` que deleguen en los workspaces, y verificar que `npm run build` y `npx oxlint` desde la raíz terminan sin errores
-- [ ] 1.5 Verificar manualmente con `npm run dev` que la aplicación se ve y funciona exactamente igual que antes de mover nada: crear, completar, editar y eliminar una tarea, alternar el tema, y recargar la página conservando las tareas (todavía vía `localStorage`)
-- [ ] 1.6 Verificar manualmente a ~375px y a ~1280px de ancho que el layout no cambió respecto al estado previo, confirmando que ninguna clase de Tailwind se perdió al mover los archivos
+- [x] 1.1 Convertir el `package.json` de la raíz en manifiesto de workspaces (`workspaces: ["apps/*", "packages/*"]`, `private: true`), moviendo las dependencias y los scripts actuales a `apps/web/package.json`, y verificar que `npm install` desde la raíz termina sin errores y genera un único `package-lock.json`
+  > Mismos 111 paquetes con las mismas versiones resueltas que el lock anterior. `oxlint` y `playwright` quedan en la raíz; el resto, en `apps/web`.
+- [x] 1.2 Mover `src/`, `index.html`, `public/`, `vite.config.ts` y los `tsconfig*.json` a `apps/web/`, ajustando las rutas relativas de los `tsconfig` y de `vite.config.ts`, y verificar que `npm run build -w apps/web` compila sin errores
+  > El build de `apps/web` es idéntico byte a byte al anterior: mismos hashes (`index-w5iJ4cxp.css`, `index-C1DMje6B.js`). Para no romper la publicación, `deploy.yml` pasa a subir `apps/web/dist` en el mismo cambio.
+- [x] 1.3 Reescribir las directivas `@source` de `apps/web/src/index.css` para las rutas nuevas, y verificar con `grep -F '.bg-\[var\(--bg\)\]' apps/web/dist/assets/*.css` que la clase sigue presente en el CSS construido (con `-F`, no regex: los selectores van escapados — `CLAUDE.md` — Gotchas)
+  > No hizo falta reescribirlas: `@source` es relativa a `index.css`, y `src/` e `index.html` se movieron juntos. Verificado igual: la clase está presente y los 108 selectores del CSS coinciden con la línea base.
+- [x] 1.4 Añadir scripts de raíz `build`, `lint` y `dev` que deleguen en los workspaces, y verificar que `npm run build` y `npx oxlint` desde la raíz terminan sin errores
+- [x] 1.5 Verificar manualmente con `npm run dev` que la aplicación se ve y funciona exactamente igual que antes de mover nada: crear, completar, editar y eliminar una tarea, alternar el tema, y recargar la página conservando las tareas (todavía vía `localStorage`)
+  > Verificada con un script efímero de Playwright contra `npm run dev` lanzado desde la raíz: crear, completar, editar, eliminar, alternar el tema y recargar; las tareas se conservan en `todo-list:tasks`, el tema no se recuerda y no hay errores en consola.
+- [x] 1.6 Verificar manualmente a ~375px y a ~1280px de ancho que el layout no cambió respecto al estado previo, confirmando que ninguna clase de Tailwind se perdió al mover los archivos
+  > Capturas a 375 px y 1280 px, en tema claro y oscuro, idénticas byte a byte a una línea base tomada antes de mover nada, sin scroll horizontal.
 
 ## 2. Paquete compartido de tipos y validación
 
