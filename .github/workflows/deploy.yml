@@ -61,8 +61,11 @@ jobs:
         with:
           path: apps/web/dist
 
+  # Despues del API y no en paralelo: si falla el disparo del despliegue del
+  # API, la web anterior sigue publicada. Publicarlas a la vez dejo en la 0.3.0
+  # una web nueva apuntando a un API que nunca se desplego.
   publicar-web:
-    needs: construir
+    needs: [construir, desplegar-api]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
