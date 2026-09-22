@@ -108,10 +108,13 @@
 
 ## 7. Publicar en remoto
 
-- [ ] 7.1 Verificar que sigue vigente el repositorio remoto creado por `add-development-workflow` (`ragudc1984/idrconsultingcapacitacion`, rama principal `main`) y que muestra el historial completo
+- [x] 7.1 Verificar que sigue vigente el repositorio remoto creado por `add-development-workflow` (`ragudc1984/idrconsultingcapacitacion`, rama principal `main`) y que muestra el historial completo
+  > `ragudc1984/idrconsultingcapacitacion`, público. Por Gitflow, la rama predeterminada es `develop`, no `main`. El historial completo empieza en el commit inicial `6cf507b`.
 - [ ] 7.2 **[manual]** Crear el servicio web del API en Render conectado al repositorio, configurar `DATABASE_URL`, `PORT` y `CORS_ORIGINS` como variables del servicio, y el comando de pre-deploy `npx prisma migrate deploy`, y verificar que la comprobación de disponibilidad responde con éxito en la URL pública
-- [ ] 7.3 Trasladar a `apps/web` la configuración de `base` que creó `add-development-workflow` en `vite.config.ts` (`/idrconsultingcapacitacion/`, sobrescribible con `VITE_BASE`, aplicada en build y preview), y verificar con `npm run preview` que los assets cargan bajo esa ruta base
-- [ ] 7.4 Verificar que GitHub Pages sigue habilitado con origen en GitHub Actions (lo habilitó `add-development-workflow`)
+- [x] 7.3 Trasladar a `apps/web` la configuración de `base` que creó `add-development-workflow` en `vite.config.ts` (`/idrconsultingcapacitacion/`, sobrescribible con `VITE_BASE`, aplicada en build y preview), y verificar con `npm run preview` que los assets cargan bajo esa ruta base
+  > Ya se había trasladado en la fase 1, al mover `vite.config.ts`. Verificado con `npm run preview` desde la raíz: la página y los assets responden 200 bajo `/idrconsultingcapacitacion/`, y `VITE_BASE=/otra-ruta/` la sobrescribe sin tocar el código. En Git Bash hace falta `MSYS_NO_PATHCONV=1`, porque si no convierte `/otra-ruta/` en una ruta de Windows.
+- [x] 7.4 Verificar que GitHub Pages sigue habilitado con origen en GitHub Actions (lo habilitó `add-development-workflow`)
+  > `gh api repos/.../pages`: `build_type=workflow`, en `https://ragudc1984.github.io/idrconsultingcapacitacion/`.
 - [ ] 7.5 **[manual]** Verificar el sistema publicado de punta a punta desde otro dispositivo: crear, completar, editar y eliminar una tarea contra el API remoto, recargar y confirmar que los cambios siguen ahí
 - [ ] 7.6 **[manual]** Verificar el escenario de servicio suspendido: dejar el API dormir por inactividad, abrir la web publicada, y confirmar que el estado de carga se mantiene comprensible durante toda la espera sin mostrar error ni lista vacía
 
