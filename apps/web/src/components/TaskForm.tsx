@@ -1,7 +1,7 @@
 import { Plus } from 'lucide-react'
 import { useId, useState } from 'react'
 import type { FormEvent, RefObject } from 'react'
-import { MAX_TITLE_LENGTH } from '../storage'
+import { MAX_TITLE_LENGTH } from '@idr/shared'
 
 interface TaskFormProps {
   inputRef?: RefObject<HTMLInputElement | null>

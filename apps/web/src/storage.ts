@@ -1,9 +1,6 @@
-import type { Task } from './types'
+import { MAX_TITLE_LENGTH, type Task } from '@idr/shared'
 
 const TASKS_STORAGE_KEY = 'todo-list:tasks'
-
-/** Tope de título. Evita que un pegado accidental de 2 MB llene el storage. */
-export const MAX_TITLE_LENGTH = 200
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null

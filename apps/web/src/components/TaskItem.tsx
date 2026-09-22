@@ -1,8 +1,8 @@
 import { Check, Pencil, Trash2 } from 'lucide-react'
 import { useId, useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
-import { MAX_TITLE_LENGTH } from '../storage'
-import type { Task } from '../types'
+import { MAX_TITLE_LENGTH } from '@idr/shared'
+import type { Task } from '@idr/shared'
 
 interface TaskItemProps {
   task: Task

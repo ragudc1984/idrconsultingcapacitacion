@@ -1,5 +1,5 @@
 # Publicacion: en cada push a main repite la puerta de verificacion y, solo si
-# pasa, publica dist/ en GitHub Pages. Repite los pasos de ci.yml a proposito:
+# pasa, publica apps/web/dist/ en GitHub Pages. Repite los pasos de ci.yml a proposito:
 # un despliegue que confia en que otro workflow ya verifico es un despliegue que
 # un dia publica algo roto.
 name: deploy
@@ -40,7 +40,7 @@ jobs:
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: apps/web/dist
 
   publicar:
     needs: construir
