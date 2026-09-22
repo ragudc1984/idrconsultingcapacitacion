@@ -13,9 +13,10 @@ desarrollo spec-driven. Llegan a este repositorio para practicar el ciclo
 completo de OpenSpec —propuesta, spec, tareas, implementación, archivo— sobre un
 artefacto lo bastante pequeño como para que el proceso sea lo visible.
 
-**Usuario simulado de la app:** una persona llevando sus propias tareas en un
-solo navegador. No hay cuentas, roles ni colaboración; esta figura existe para
-dar a los requisitos un sujeto concreto, no porque haya usuarios en producción.
+**Usuario simulado de la app:** una persona llevando sus propias tareas desde
+cualquier navegador o dispositivo, contra una única lista guardada en el
+servidor. No hay cuentas, roles ni colaboración; esta figura existe para dar a
+los requisitos un sujeto concreto, no porque haya usuarios en producción.
 
 Esa distinción es material: cuando algo obliga a elegir entre la app y la
 claridad del ejercicio, gana el ejercicio.
@@ -53,7 +54,12 @@ es lo que no se puede reponer.
   implementación.
 - Las tareas incluyen pasos de verificación manual explícitos (anchos concretos,
   recargas de página). Marcarlos sin ejecutarlos rompe el ejercicio.
-- Comandos: `npm run dev`, `npm run build`, `npm run lint` (oxlint).
+- Monorepo con npm workspaces: la aplicación web en `apps/web`, el API en
+  `apps/api` y el contrato compartido (tipo `Task` y validación del título) en
+  `packages/shared`.
+- Comandos, desde la raíz: `npm run dev` (web), `npm run dev -w @idr/api`
+  (API), `npm run build` (todos los workspaces), `npm run lint` (oxlint) y
+  `npm run verify` (la puerta antes de empujar).
 - **Playwright** está disponible como herramienta de verificación visual para
   ejecutar las tareas de comprobación de cada cambio. No es una suite de tests:
   no hay runner, ni `npm test`, ni scripts versionados. El proyecto sigue sin
@@ -67,14 +73,28 @@ es lo que no se puede reponer.
 
 **Capacidades confirmadas:** crear tareas, listarlas en orden de creación,
 alternar completada/pendiente, editar el título en línea, eliminar con
-confirmación explícita, persistir en `localStorage`, alternar tema claro/oscuro,
-y un layout mobile-first para móvil, tablet y escritorio.
+confirmación explícita, persistir en el servidor a través del API de tareas
+(las mismas tareas desde cualquier navegador), mostrar estados de carga, de
+fallo de carga con reintento, de fallo al guardar y de acción en curso,
+alternar tema claro/oscuro, y un layout mobile-first para móvil, tablet y
+escritorio.
 
 **Restricciones vinculantes** (confirmadas con el equipo; ninguna se puede
 levantar sin cambiar el spec):
 
-- **Sin backend.** Un navegador, un origen, un dispositivo. Sin cuentas, sin
-  sincronización entre pestañas o equipos.
+- **Una sola lista, sin cuentas.** La web (GitHub Pages) habla con un API REST
+  (Express y Prisma, en Render) que guarda las tareas en PostgreSQL (Neon). Hay
+  una única lista compartida por quien tenga la dirección: sin autenticación,
+  sin multiusuario y sin sincronización en tiempo real entre pestañas. Esta
+  restricción sustituye a la anterior, "Sin backend", que se levantó a
+  propósito en el cambio `replace-localstorage-with-api-backend`.
+- **Sin datos reales.** La web y el API son públicos y cualquiera con la
+  dirección puede leer, crear y borrar tareas. Es aceptable en un ejercicio de
+  capacitación y por eso queda escrito como restricción: no se cargan datos de
+  clientes ni información interna.
+- **La interfaz espera al servidor.** No hay actualización optimista, caché
+  local ni modo offline: la pantalla nunca muestra algo que el servidor no
+  tiene.
 - **Accesibilidad WCAG AA.** Ver `## Accessibility & Inclusion`.
 - **Solo español.** Sin internacionalización; el copy vive en los componentes.
 - **OpenSpec obligatorio.** Ningún cambio de comportamiento sin propuesta, spec
@@ -106,8 +126,9 @@ destructivos ni de error.
   requisitos y el rastro de decisiones ya acordados. Es la evidencia real del
   repositorio.
 - Sin clientes, testimonios, métricas de uso, benchmarks ni datos de producción.
-  No existe despliegue. Trabajos futuros no deben inventar ninguna de esas cosas
-  ni presentar la app como algo en uso.
+  La app está publicada para el ejercicio, pero no tiene usuarios reales.
+  Trabajos futuros no deben inventar ninguna de esas cosas ni presentar la app
+  como algo en uso.
 
 ## Product Principles
 

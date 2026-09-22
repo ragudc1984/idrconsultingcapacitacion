@@ -91,7 +91,10 @@ español y el que el equipo va a encontrar en proyectos existentes. Fastify es
 mejor técnicamente, pero suma plugins y hooks como conceptos nuevos que compiten
 con el foco real del ejercicio, que es OpenSpec y no el framework.
 
-**Prisma con PostgreSQL gestionado (Neon), no SQLite.** Prisma da migraciones
+**Prisma con PostgreSQL gestionado (Neon), no SQLite.** *Al aplicar:* el
+proyecto de Neon tiene dos ramas, `production` para Render y `desarrollo`
+para el `.env` local, de modo que las pruebas de desarrollo no aparezcan en la
+app publicada. Prisma da migraciones
 versionadas —archivos en el repositorio, aplicados en el despliegue— que son
 justamente lo que hace enseñable el paso de CD. SQLite se descartó porque el
 disco de un plan gratuito es efímero: las tareas desaparecerían en cada
@@ -165,10 +168,20 @@ adoptó además Gitflow: el trabajo de este cambio va en ramas `feature-*` hacia
 `develop`, y se publica al integrar una `release-*` en `main`.
 
 **El despliegue del API se dispara con un deploy hook de Render, y las
-migraciones se ejecutan como comando de pre-deploy del propio servicio, no desde
-Actions.** Ejecutarlas desde Actions exigiría exponer la cadena de conexión de la
-base de datos a GitHub, ampliando la superficie de un secreto que hoy solo
-necesita conocer Render.
+migraciones se ejecutan dentro de Render, no desde Actions.** Ejecutarlas desde
+Actions exigiría exponer la cadena de conexión de la base de datos a GitHub,
+ampliando la superficie de un secreto que hoy solo necesita conocer Render.
+
+*Revisado al aplicar:* el plan original usaba el comando de pre-deploy de
+Render, pero según su documentación *"the pre-deploy command is available for
+paid web services"*, y el servicio usa el plan gratuito. La migración pasa al
+**final del comando de build**
+(`npm ci && npm run build -w @idr/api && npx -w @idr/api prisma migrate deploy`).
+Cumple el mismo requisito: si cualquier comando del build falla, Render aborta
+el despliegue y *"your service continues running its most recent successful
+deploy"*. Y como la migración va al final, sólo se aplica cuando todo lo
+anterior compiló. El auto-deploy de Render queda apagado: el único disparador
+es el deploy hook, que `deploy.yml` llama después de verificar.
 
 **Rama principal protegida, ramas de feature con pull request.** Hoy el
 repositorio está en `master` sin remoto. El cambio incluye crear el repositorio

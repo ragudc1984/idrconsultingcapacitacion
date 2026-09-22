@@ -30,18 +30,54 @@ ese rastro no se puede reponer.
 
 ## Puesta en marcha
 
-Requisitos: **Node.js 20.19 o superior** (o 22.12+; lo exige Vite) y npm.
+Requisitos: **Node.js 20.19 o superior** (o 22.12+; lo exigen Vite y Prisma),
+npm, y una base de datos **PostgreSQL**. La gratuita de [Neon](https://neon.tech)
+alcanza.
+
+El repositorio es un monorepo con npm workspaces: la web en `apps/web`, el API
+en `apps/api` y el contrato compartido en `packages/shared`. Todos los comandos
+se ejecutan desde la raíz, salvo la migración.
+
+**1. Clonar e instalar**
 
 ```bash
 git clone https://github.com/ragudc1984/idrconsultingcapacitacion.git
 cd idrconsultingcapacitacion
 npm install
-npm run dev
 ```
 
-`npm run dev` levanta el servidor de desarrollo de Vite e imprime la dirección
-local. No hacen falta variables de entorno: la aplicación guarda las tareas en el
-`localStorage` del navegador y no habla con ningún servicio externo.
+**2. Configurar el API.** Copia `apps/api/.env.example` como `apps/api/.env` y
+completa `DATABASE_URL` con la cadena de conexión de tu base. Usa la conexión
+**directa** (en Neon, la que no tiene `-pooler` en el host) con
+`sslmode=verify-full`. Las otras dos variables ya traen el valor de desarrollo:
+
+| Variable | Qué es | Desarrollo |
+|---|---|---|
+| `DATABASE_URL` | Cadena de conexión de PostgreSQL. **Secreta.** | La de tu base |
+| `PORT` | Puerto del API | `3000` |
+| `CORS_ORIGINS` | Orígenes que pueden llamar al API desde un navegador, separados por coma. Nunca `*` | `http://localhost:5173` |
+
+**3. Crear las tablas**
+
+```bash
+cd apps/api
+npx prisma migrate deploy
+cd ../..
+```
+
+**4. Configurar la web.** Copia `apps/web/.env.example` como
+`apps/web/.env.local`. Trae `VITE_API_URL=http://localhost:3000`, que apunta al
+API local. No es secreta: termina escrita en el JavaScript servido.
+
+**5. Arrancar**, en dos terminales:
+
+```bash
+npm run dev -w @idr/api   # API en http://localhost:3000
+npm run dev               # web en http://localhost:5173
+```
+
+Los `.env` reales están en `.gitignore`: nunca se commitean. Para comprobar que
+el API ve la base: `http://localhost:3000/salud` responde `{"estado":"disponible"}`.
 
 > **En Windows, clona en una ruta corta.** Las rutas del archivo histórico de
 > `openspec/` llegan a 102 caracteres, así que un destino profundo agota el
@@ -52,11 +88,12 @@ local. No hacen falta variables de entorno: la aplicación guarda las tareas en 
 ## Comandos
 
 ```bash
-npm run dev       # servidor de desarrollo (Vite)
-npm run build     # tsc -b && vite build
-npm run lint      # oxlint
-npm run verify    # la puerta de verificación completa (ver abajo)
-npm run preview   # sirve localmente lo que produjo el build
+npm run dev               # web (Vite)
+npm run dev -w @idr/api   # API (tsx watch)
+npm run build             # todos los workspaces
+npm run lint              # oxlint sobre todo el repositorio
+npm run verify            # la puerta de verificación completa (ver abajo)
+npm run preview           # sirve localmente el build de la web
 ```
 
 **No hay runner de tests y es deliberado.** No existe `npm test`. La verificación

@@ -76,6 +76,15 @@ components:
     textColor: "{colors.text}"
     typography: "{typography.body}"
     padding: "0.5rem 0.125rem"
+  notice-danger:
+    textColor: "{colors.text}"
+    typography: "{typography.label}"
+    rounded: "{rounded.md}"
+    padding: "0.75rem 1rem"
+  state-loading:
+    textColor: "{colors.text}"
+    typography: "{typography.body}"
+    padding: "2.5rem 1.5rem"
   surface-dialog:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.text}"
@@ -191,7 +200,7 @@ El sistema es **plano en reposo**. No hay sombras ambientales, ni capas tonales,
 Hay exactamente dos vocabularios de profundidad, y no se mezclan:
 
 ### Shadow Vocabulary
-- **Halo de estado** (`box-shadow: 0 0 12px var(--*-glow)` en controles de fila, `0 0 14px` en el toggle de tema, `0 0 18px` en los botones de relleno): un halo de color sin desplazamiento, del mismo acento que el control. Aparece sólo en `:hover`. Los tokens `--*-glow` son el acento a `0.28` de alfa en claro y `0.35` en oscuro.
+- **Halo de estado** (`box-shadow: 0 0 12px var(--*-glow)` en controles de fila, `0 0 14px` en el toggle de tema, `0 0 18px` en los botones de relleno): un halo de color sin desplazamiento, del mismo acento que el control. Aparece sólo en `:hover`, y nunca en un control que está esperando al servidor. Los tokens `--*-glow` son el acento a `0.28` de alfa en claro y `0.35` en oscuro.
 - **Elevación real** (`box-shadow: 0 18px 48px -12px`): exclusiva del diálogo. Tiene desplazamiento y desenfoque de verdad, porque es la única superficie que flota sobre el resto.
 
 En impresión no hay profundidad de ningún tipo: ni halo ni sombra de diálogo. El
@@ -211,11 +220,11 @@ sobre un pseudo-elemento, nunca como `box-shadow`.
 
 ## Shapes
 
-Dos radios, sin escala intermedia. **Píldora completa** (`9999px`) para todo lo que se pulsa: los seis controles interactivos, sin excepción. **Curva suave** (`0.5rem`) para lo que contiene: el diálogo, el estado vacío y el aviso de almacenamiento.
+Dos radios, sin escala intermedia. **Píldora completa** (`9999px`) para todo lo que se pulsa: todos los controles interactivos, sin excepción, incluido el de reintentar. **Curva suave** (`0.5rem`) para lo que contiene: el diálogo, el estado vacío, el error de carga y el aviso de fallo al guardar.
 
 Los campos de entrada no tienen forma propia: son una línea. Un borde inferior de 1px en reposo que pasa a 2px y al color del acento al enfocar, sin caja, sin fondo, sin radio. Es el gesto más característico del sistema.
 
-El estado vacío es el único lugar con borde punteado, y ese punteado es lo que lo distingue de una lista real.
+El estado vacío es el único lugar con borde punteado, y ese punteado es lo que lo distingue de una lista real. El estado de carga ocupa el mismo lugar **sin ningún borde**: el punteado diría que no hay tareas cuando todavía no se sabe.
 
 ### Named Rules
 
@@ -229,14 +238,17 @@ El estado vacío es el único lugar con borde punteado, y ese punteado es lo que
 - **Shape:** píldora completa (`9999px`) en los cuatro tipos.
 - **Primario (agregar tarea):** círculo de `2.5rem` con relleno Verde Señal e ícono del color del lienzo. Crece a `2.75rem` bajo puntero grueso.
 - **Destructivo (eliminar):** relleno Magenta Corte, texto del color del lienzo, `0.5rem 1rem` de padding.
-- **Fantasma (cancelar):** sin relleno ni borde, texto atenuado que vira a Violeta Trabajo en hover.
+- **Fantasma (cancelar, reintentar):** sin relleno ni borde, texto atenuado que vira a Violeta Trabajo en hover, `0.5rem 1rem` de padding. El de reintentar lleva además un ícono de 18px separado `0.5rem` del texto.
 - **De ícono (completar / editar / eliminar):** `0.375rem` de padding sobre un ícono de 18px — 30px de tinta, que crece a un área de `2.75rem` bajo puntero grueso sin que el ícono cambie de tamaño. En reposo son texto atenuado; en hover viran a su acento. El de completar es el único con estado persistente: Verde Señal cuando la tarea está hecha.
 - **Hover / Focus:** hover cambia el color y enciende el halo; foco dibuja un `outline` sólido de 2px con `outline-offset: 2px` del acento correspondiente, y `Highlight` bajo `forced-colors`. Transición por defecto de 150ms.
+- **En curso:** mientras una acción espera al servidor, el control que la disparó cambia su ícono por el de carga (un círculo abierto, al mismo tamaño y color que el ícono al que sustituye) y el cursor pasa a `progress`. Los demás controles de esa fila esperan con él y el halo de hover se suprime en todos. El control conserva su forma, su color y su foco: no se atenúa ni desaparece. El resto de la interfaz no cambia.
 
 ### Cards / Containers
 - **El diálogo** es el único contenedor elevado: `24rem` de ancho máximo, `0.5rem` de radio, fondo Superficie, borde hairline de 1px, `1.5rem` de padding y la sombra de elevación real. Se presenta sobre un velo `rgba(18,21,28,0.55)` en claro y `rgba(4,6,10,0.72)` en oscuro.
-- **El estado vacío** comparte el radio pero invierte el tratamiento: sin relleno, borde punteado, contenido centrado y `1.5rem 2.5rem` de padding.
-- **El aviso de almacenamiento** usa el mismo radio con un borde de 1px en Magenta Corte.
+- **El estado vacío** comparte el radio pero invierte el tratamiento: sin relleno, borde punteado, contenido centrado y `2.5rem 1.5rem` de padding.
+- **El estado de carga** ocupa el lugar de la lista con la misma anatomía que el estado vacío, pero sin borde: un ícono de carga de 22px en Texto atenuado, "Cargando tareas…" en cuerpo, y, si la espera pasa de 4 segundos, una línea de etiqueta en Texto atenuado que explica la demora.
+- **El error de carga** usa la curva suave con un borde de 1px en Magenta Corte y `0.75rem 1rem` de padding: el mensaje en cuerpo, el detalle en etiqueta atenuada debajo, y el botón fantasma de reintentar alineado a la izquierda.
+- **El aviso de fallo al guardar** tiene la misma forma que el error de carga, con el texto en etiqueta, y aparece sobre el formulario. Desaparece con la siguiente acción que se guarde. En impresión se oculta.
 
 ### Inputs / Fields
 - **Estilo:** sin caja. Fondo transparente, sólo `border-bottom` de 1px en Hairline, `0.5rem 0.125rem` de padding, texto de `1rem`.
@@ -251,6 +263,10 @@ En el borde izquierdo, una barra de `2px` en Verde Señal permanece invisible ha
 
 Una tarea recién creada entra con `task-in`: 200ms de `cubic-bezier(0.23, 1, 0.32, 1)` que combinan un fundido y un desplazamiento de 6px **hacia arriba**, porque la tarea se añade al final de la lista y tiene que llegar desde el lado que ocupa, no desde la fila anterior. El destello del halo va aparte, en `task-glow` sobre un `::after` con el `box-shadow` fijo y la opacidad animada: animar `box-shadow` obliga a repintar en cada fotograma. Bajo `prefers-reduced-motion` la entrada se sustituye por un fundido de opacidad de 200ms —no por `none`— para conservar la señal de aparición y el evento que limpia el estado, y el halo no se anima.
 
+### Named Rules
+
+**La Regla de la Espera Quieta.** Esperar no se anima. El indicador de carga y el de acción en curso son estáticos: un ícono que gira indefinidamente rompe el Presupuesto de 300 ms, y la señal —ícono, cursor y texto— se entiende igual con o sin `prefers-reduced-motion`, porque no hay movimiento que sustituir.
+
 ## Do's and Don'ts
 
 ### Do:
@@ -261,6 +277,7 @@ Una tarea recién creada entra con `task-in`: 200ms de `cubic-bezier(0.23, 1, 0.
 - **Do** dar a `prefers-reduced-motion` una alternativa que conserve el cambio de estado, no un apagado global.
 - **Do** acompañar todo color con ícono, posición o texto. El color nunca informa solo.
 - **Do** dar a cada rol de color una respuesta en los tres temas. En impresión, casi siempre es desaparecer o volverse tinta.
+- **Do** mostrar una acción en curso cambiando el ícono del control por el de carga, estático, con cursor `progress` y sin halo.
 
 ### Don't:
 - **Don't** derivar un tema del otro sumando o restando brillo. Es el defecto que dejó el botón primario a 1.96:1.
@@ -272,4 +289,5 @@ Una tarea recién creada entra con `task-in`: 200ms de `cubic-bezier(0.23, 1, 0.
 - **Don't** escribir colores literales en los componentes. Todo pasa por token; hoy no queda ni uno suelto.
 - **Don't** redeclarar en `body` lo que el remapeo de tokens ya resuelve. El tema de impresión cambia los tokens; el resto se hereda solo.
 - **Don't** animar `box-shadow`, `width`, `height` ni propiedades de posición. Sólo `opacity` y `transform` componen.
+- **Don't** hacer girar un indicador de carga ni darle al estado de carga el borde punteado del estado vacío.
 - **Don't** añadir un radio nuevo. Píldora si se pulsa, `0.5rem` si contiene, línea si se escribe.

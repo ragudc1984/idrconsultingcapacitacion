@@ -1,9 +1,11 @@
 import { Sparkle } from 'lucide-react'
 import TaskItem from './TaskItem'
-import type { Task } from '../types'
+import type { Task } from '@idr/shared'
+import type { Accion } from '../acciones'
 
 interface TaskListProps {
   tasks: Task[]
+  enCurso: ReadonlyMap<string, Accion>
   justAddedId: string | null
   onAnimationSettled: () => void
   onToggleDone: (id: string) => void
@@ -13,6 +15,7 @@ interface TaskListProps {
 
 function TaskList({
   tasks,
+  enCurso,
   justAddedId,
   onAnimationSettled,
   onToggleDone,
@@ -40,6 +43,7 @@ function TaskList({
         <TaskItem
           key={task.id}
           task={task}
+          accionEnCurso={enCurso.get(task.id)}
           isNew={task.id === justAddedId}
           onAnimationSettled={onAnimationSettled}
           onToggleDone={onToggleDone}

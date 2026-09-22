@@ -1,11 +1,14 @@
-import { Check, Pencil, Trash2 } from 'lucide-react'
+import { Check, LoaderCircle, Pencil, Trash2 } from 'lucide-react'
 import { useId, useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
-import { MAX_TITLE_LENGTH } from '../storage'
-import type { Task } from '../types'
+import { MAX_TITLE_LENGTH } from '@idr/shared'
+import type { Task } from '@idr/shared'
+import type { Accion } from '../acciones'
 
 interface TaskItemProps {
   task: Task
+  /** La acción que se está guardando sobre esta tarea, si hay una. */
+  accionEnCurso: Accion | undefined
   isNew: boolean
   onAnimationSettled: () => void
   onToggleDone: (id: string) => void
@@ -15,6 +18,7 @@ interface TaskItemProps {
 
 function TaskItem({
   task,
+  accionEnCurso,
   isNew,
   onAnimationSettled,
   onToggleDone,
@@ -31,7 +35,15 @@ function TaskItem({
   const hintId = useId()
   const errorId = useId()
 
+  // Mientras una acción de esta fila se guarda, ninguna otra puede empezar
+  // sobre la misma tarea: un doble click no duplica nada y una edición no se
+  // cruza con un borrado. El resto de la interfaz sigue usable.
+  const ocupada = accionEnCurso !== undefined
+
   function startEditing() {
+    if (ocupada) {
+      return
+    }
     setDraft(task.title)
     setError('')
     skipBlurCommitRef.current = false
@@ -126,32 +138,50 @@ function TaskItem({
 
       <button
         type="button"
-        onClick={() => onToggleDone(task.id)}
+        onClick={ocupada ? undefined : () => onToggleDone(task.id)}
+        aria-disabled={ocupada || undefined}
+        aria-busy={accionEnCurso === 'completar' || undefined}
         // Etiqueta estatica + aria-pressed es el patron de boton de alternancia:
         // el nombre dice que concepto controla, aria-pressed dice si esta activo.
         // Nombrar la tarea evita oir la misma cadena en cada fila de la lista.
         aria-label={`Completar tarea: ${task.title}`}
         aria-pressed={task.done}
-        className={`focus-ring-cyan touch-target no-print inline-flex items-center justify-center rounded-full p-1.5 transition hover:text-[var(--cyan)] hover:shadow-[0_0_12px_var(--cyan-glow)] ${task.done ? 'text-[var(--cyan)]' : 'text-[var(--text-muted)]'}`}
+        className={`focus-ring-cyan touch-target no-print inline-flex items-center justify-center rounded-full p-1.5 transition hover:text-[var(--cyan)] hover:shadow-[0_0_12px_var(--cyan-glow)] aria-disabled:cursor-progress aria-disabled:hover:shadow-none ${task.done ? 'text-[var(--cyan)]' : 'text-[var(--text-muted)]'}`}
       >
-        <Check size={18} aria-hidden="true" />
+        {accionEnCurso === 'completar' ? (
+          <LoaderCircle size={18} aria-hidden="true" />
+        ) : (
+          <Check size={18} aria-hidden="true" />
+        )}
       </button>
       <button
         ref={editButtonRef}
         type="button"
         onClick={startEditing}
+        aria-disabled={ocupada || undefined}
+        aria-busy={accionEnCurso === 'editar' || undefined}
         aria-label={`Editar tarea: ${task.title}`}
-        className="focus-ring-violet touch-target no-print inline-flex items-center justify-center rounded-full p-1.5 text-[var(--text-muted)] transition hover:text-[var(--violet)] hover:shadow-[0_0_12px_var(--violet-glow)]"
+        className="focus-ring-violet touch-target no-print inline-flex items-center justify-center rounded-full p-1.5 text-[var(--text-muted)] transition hover:text-[var(--violet)] hover:shadow-[0_0_12px_var(--violet-glow)] aria-disabled:cursor-progress aria-disabled:hover:shadow-none"
       >
-        <Pencil size={18} aria-hidden="true" />
+        {accionEnCurso === 'editar' ? (
+          <LoaderCircle size={18} aria-hidden="true" />
+        ) : (
+          <Pencil size={18} aria-hidden="true" />
+        )}
       </button>
       <button
         type="button"
-        onClick={() => onRequestDelete(task.id)}
+        onClick={ocupada ? undefined : () => onRequestDelete(task.id)}
+        aria-disabled={ocupada || undefined}
+        aria-busy={accionEnCurso === 'eliminar' || undefined}
         aria-label={`Eliminar tarea: ${task.title}`}
-        className="focus-ring-magenta touch-target no-print inline-flex items-center justify-center rounded-full p-1.5 text-[var(--text-muted)] transition hover:text-[var(--magenta)] hover:shadow-[0_0_12px_var(--magenta-glow)]"
+        className="focus-ring-magenta touch-target no-print inline-flex items-center justify-center rounded-full p-1.5 text-[var(--text-muted)] transition hover:text-[var(--magenta)] hover:shadow-[0_0_12px_var(--magenta-glow)] aria-disabled:cursor-progress aria-disabled:hover:shadow-none"
       >
-        <Trash2 size={18} aria-hidden="true" />
+        {accionEnCurso === 'eliminar' ? (
+          <LoaderCircle size={18} aria-hidden="true" />
+        ) : (
+          <Trash2 size={18} aria-hidden="true" />
+        )}
       </button>
 
       {isEditing && (
