@@ -192,6 +192,11 @@ siguen vivos y relanzan el servidor con el próximo cambio de archivo. Mata el
 cambio (su watcher retiene `openspec/`) como `npm ci` (Vite retiene un binding
 nativo de `node_modules`).
 
+**El `start` de la raíz es para Railway, no lo borres.** Railpack busca primero
+un script `start` en el `package.json` de la raíz. Sin él, ve Vite en `apps/web`,
+toma el repositorio por un sitio estático y el build falla en la fase de
+preparación, sin decir por qué.
+
 **El cliente de Prisma se genera; no se versiona.** Vive en
 `apps/api/src/generated/`, fuera de git y de oxlint, y el `build` del API lo
 regenera. Prisma está fijado a propósito en `7.10.0`: la etiqueta `latest` de
