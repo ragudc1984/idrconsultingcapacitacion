@@ -3,7 +3,7 @@ import type { Task } from './types'
 const TASKS_STORAGE_KEY = 'todo-list:tasks'
 
 /** Tope de título. Evita que un pegado accidental de 2 MB llene el storage. */
-export const MAX_TITLE_LENGTH = 200
+export const MAX_TITLE_LENGTH: number = 'doscientos'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
