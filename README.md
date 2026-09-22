@@ -1,6 +1,6 @@
 # Capacitación IDR Consulting
 
-**Aplicación publicada:** _(pendiente — se completa al publicar en GitHub Pages)_
+**Aplicación publicada:** <https://ragudc1984.github.io/idrconsultingcapacitacion/>
 
 Ejercicio de capacitación en **desarrollo spec-driven** para el equipo de IDR
 Consulting. La lista de tareas es el vehículo; el producto real es el proceso.
@@ -30,7 +30,7 @@ ese rastro no se puede reponer.
 
 ## Puesta en marcha
 
-Requisitos: **Node.js 20 o superior** y npm.
+Requisitos: **Node.js 20.19 o superior** (o 22.12+; lo exige Vite) y npm.
 
 ```bash
 git clone https://github.com/ragudc1984/idrconsultingcapacitacion.git
@@ -100,20 +100,66 @@ Durante el trabajo normal usa `npm run build` y `npm run lint` directamente;
 > reales en contenedores con [`act`](https://github.com/nektos/act), a costa de
 > necesitar Docker.
 
-## Cómo llega un cambio a `main`
+## Ramas: Gitflow
+
+El repositorio sigue [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)
+con dos ramas permanentes:
+
+| Rama | Contiene | Se publica |
+|---|---|---|
+| `main` | Solo versiones publicadas, cada una con su etiqueta `vX.Y.Z` | Sí, en cada integración |
+| `develop` | La integración de funcionalidades. Es la rama predeterminada | No |
+
+Y tres tipos de rama de trabajo, **con estos nombres exactos** (minúsculas,
+palabras separadas por guion):
+
+| Tipo | Nombre | Sale de | Se integra en |
+|---|---|---|---|
+| Funcionalidad nueva | `feature-<nombre-funcionalidad>` | `develop` | `develop` |
+| Preparar una versión | `release-<X.Y.Z>` | `develop` | `main`, y de vuelta en `develop` |
+| Solucionar un issue publicado | `hotfix-<nombre-issue>` | `main` | `main`, y de vuelta en `develop` |
+
+Ejemplos: `feature-editar-tareas`, `hotfix-foco-invisible`, `release-0.2.0`. No
+valen `feature/editar` (barra), `Feature-Editar` (mayúsculas) ni un nombre sin
+prefijo. El job `nomenclatura` de CI **rechaza** un pull request con un nombre
+inválido o con el destino equivocado (por ejemplo, una `feature-*` contra `main`).
+
+> Atlassian advierte que Gitflow es un flujo *legacy*, desplazado por el
+> desarrollo basado en trunk y difícil de combinar con CI/CD. Aquí se usa a
+> propósito, para practicar un modelo con releases y hotfixes explícitos.
+
+### Funcionalidad nueva
 
 1. **Propuesta de OpenSpec primero.** Ningún cambio de comportamiento se escribe
    sin `proposal.md`, `design.md`, `specs/` y `tasks.md` en
    `openspec/changes/<nombre>/`.
-2. Rama de trabajo a partir de `main`.
+2. `git checkout develop && git pull` y `git checkout -b feature-<nombre>`.
 3. Commits en español, describiendo qué cambió.
 4. `npm run verify` en verde.
-5. Pull request contra `main`.
-6. Merge **solo** con las comprobaciones en verde.
+5. Pull request contra `develop`, e integrar **solo** con las comprobaciones en
+   verde.
 
-**No se empuja directamente a `main`**: la rama está protegida y el remoto
-rechaza el push. Hasta un arreglo de una línea pasa por pull request — es
-intencional.
+### Release
+
+1. `git checkout develop && git pull` y `git checkout -b release-X.Y.Z`.
+2. Fijar `"version": "X.Y.Z"` en `package.json`. En la rama de release solo entran
+   correcciones y preparación de la versión, nunca funcionalidades nuevas.
+3. Pull request contra `main`. Al integrarlo, `deploy` publica la versión.
+4. Etiquetar el commit de integración y empujar la etiqueta:
+   `git checkout main && git pull && git tag vX.Y.Z && git push origin vX.Y.Z`.
+5. **Pull request de la misma rama contra `develop`.** Si se omite, `develop`
+   pierde lo que ya se publicó.
+
+### Hotfix
+
+1. `git checkout main && git pull` y `git checkout -b hotfix-<nombre-issue>`.
+2. Corregir y subir el parche en `package.json` (de `0.1.0` a `0.1.1`).
+3. Pull request contra `main`, etiqueta `vX.Y.Z` y pull request de vuelta contra
+   `develop`, igual que en una release.
+
+**No se empuja directamente a `main` ni a `develop`**: las dos están protegidas,
+exigen las comprobaciones `verificar` y `nomenclatura`, y el remoto rechaza el
+push. Hasta un arreglo de una línea pasa por pull request, y es intencional.
 
 Al terminar un cambio se sincronizan sus deltas a `openspec/specs/` y se archiva
 en `openspec/changes/archive/<YYYY-MM-DD>-<nombre>/`.

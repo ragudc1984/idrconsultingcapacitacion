@@ -1,0 +1,62 @@
+# Integracion continua en cada pull request contra main o develop (Gitflow).
+#
+# - verificar: la misma puerta que `npm run verify`. Si cambian estos pasos,
+#   `verify` en package.json se actualiza en el mismo cambio (spec
+#   development-workflow).
+# - nomenclatura: valida el nombre de la rama y su destino. No tiene equivalente
+#   local porque depende de los datos del pull request.
+name: ci
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Construir
+        run: npm run build
+
+      - name: Lint
+        run: npm run lint
+
+  nomenclatura:
+    runs-on: ubuntu-latest
+    steps:
+      # Los nombres llegan por variables de entorno, no interpolados en el
+      # script: el nombre de una rama lo elige quien abre el pull request.
+      - name: Validar rama de origen y destino
+        env:
+          ORIGEN: ${{ github.head_ref }}
+          DESTINO: ${{ github.base_ref }}
+        run: |
+          echo "Rama: $ORIGEN -> $DESTINO"
+          if [[ "$ORIGEN" =~ ^feature-[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
+            permitidos="develop"
+          elif [[ "$ORIGEN" =~ ^hotfix-[a-z0-9]+(-[a-z0-9]+)*$ ]] || [[ "$ORIGEN" =~ ^release-[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            permitidos="main develop"
+          else
+            echo "::error::La rama '$ORIGEN' no respeta la nomenclatura. Formatos: feature-<nombre-funcionalidad>, hotfix-<nombre-issue>, release-<X.Y.Z> (minusculas, palabras separadas por guion)."
+            exit 1
+          fi
+          for p in $permitidos; do
+            if [ "$DESTINO" = "$p" ]; then
+              echo "Nomenclatura correcta."
+              exit 0
+            fi
+          done
+          echo "::error::Una rama '$ORIGEN' no puede integrarse en '$DESTINO'. Destinos permitidos: $permitidos."
+          exit 1

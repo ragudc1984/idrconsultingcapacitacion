@@ -49,10 +49,13 @@ orden y la obligatoriedad de lo que ya existe.
 - **Hooks de pre-commit.** Un hook que corre el build en cada commit hace el
   commit lento y empuja a la gente a saltárselo con `--no-verify`. La puerta es
   antes de empujar, no antes de commitear.
-- **Convención obligatoria de mensajes de commit** (conventional commits) y
-  **versionado semántico.** Reglas nuevas que aprender, sin beneficio en un
-  proyecto sin releases publicados.
+- **Convención obligatoria de mensajes de commit** (conventional commits). Una
+  regla más que aprender, sin beneficio que la justifique.
+- ~~**Versionado semántico.**~~ *Reabierto al adoptar Gitflow:* las releases y
+  los hotfixes de Gitflow se identifican por número de versión, así que el
+  non-goal dejó de ser compatible con el modelo de ramas elegido (ver Decisions).
 - **Entornos de staging, previews por pull request y despliegues manuales.**
+  `develop` es una rama de integración, no un entorno: no se publica.
 - **Runner de tests.** Sigue sin existir `npm test` y este cambio no lo crea.
 
 ## Decisions
@@ -126,6 +129,58 @@ puerta de verificación, y el flujo de rama y pull request. La nota sobre reglas
 type-aware de oxlint se conserva porque es lo único aprovechable de la
 plantilla.
 
+**Los workflows de GitHub se crean en este cambio, en versión mínima.** Tres
+requisitos de esta capacidad —la publicación, la protección de rama con
+comprobaciones en verde y la coincidencia entre lo local y lo remoto— no se
+pueden cumplir sin automatización, y esperar a `replace-localstorage-with-api-backend`
+obligaba a aplicar un backend entero antes de poder publicar una lista de tareas
+estática. `ci.yml` ejecuta exactamente los pasos de `verify`; `deploy.yml` los
+repite y solo entonces publica `dist/` en Pages, sin API ni Render. El spec
+completo de la automatización sigue siendo `continuous-delivery`, y aquel cambio
+extiende estos archivos en lugar de crearlos.
+
+**El modelo de ramas es Gitflow, adoptado a pedido del equipo.** Sigue la
+documentación de Atlassian: `main` guarda solo versiones publicadas, `develop`
+integra funcionalidades, `feature-*` sale de `develop` y vuelve a `develop`,
+`release-*` sale de `develop`, entra en `main` y vuelve a `develop`, y `hotfix-*`
+es la única rama que sale de `main`, a la que vuelve igual que a `develop`. La
+propia documentación advierte que Gitflow es *legacy*, que perdió terreno frente
+al desarrollo basado en trunk y que es difícil de combinar con CI/CD. Se acepta
+porque el objetivo del ejercicio es practicar un modelo con releases y hotfixes
+explícitos, y porque el costo (dos pull requests por release o hotfix) es
+pequeño en un repositorio de este tamaño. Reemplaza a la regla anterior, en la
+que toda rama de trabajo iba directo a `main`.
+
+**La nomenclatura usa guion, no barra.** Atlassian y la extensión `git-flow`
+usan `feature/nombre`; el equipo pidió `feature-nombre`. Formatos aceptados:
+`feature-<nombre>` y `hotfix-<nombre>` (minúsculas, dígitos y guiones:
+`^(feature|hotfix)-[a-z0-9]+(-[a-z0-9]+)*$`) y `release-<X.Y.Z>`
+(`^release-[0-9]+\.[0-9]+\.[0-9]+$`).
+
+**La nomenclatura se hace cumplir en CI, en un job propio.** `ci.yml` agrega el
+job `nomenclatura`, que valida la rama de origen y la de destino del pull
+request: `feature-*` solo hacia `develop`; `release-*` y `hotfix-*` hacia `main`
+o de vuelta hacia `develop`. Va aparte de `verificar` para que el fallo diga
+exactamente qué está mal, y porque no tiene equivalente local: depende de datos
+del pull request. `verify` sigue replicando el job `verificar`, paso por paso.
+`ci` pasa a correr en pull requests contra `main` y contra `develop`.
+
+**`develop` es la rama predeterminada del repositorio.** Así un pull request
+nuevo apunta a `develop` por defecto, que es el destino de casi todo el trabajo.
+`deploy.yml` sigue disparándose solo con push a `main`: lo publicado es siempre
+una versión.
+
+**Las dos ramas permanentes tienen la misma protección.** `main` y `develop`
+exigen pull request y las comprobaciones `verificar` y `nomenclatura` en verde,
+sin aprobaciones obligatorias (hay un solo desarrollador) y con la regla
+aplicada también a administradores.
+
+**Cada versión se etiqueta `vX.Y.Z` y `package.json` la declara.** El número se
+fija en la rama `release-*` o `hotfix-*`, que es donde Gitflow ubica las tareas
+de preparación de una versión; la etiqueta se crea sobre el commit de
+integración en `main`. La primera versión es `0.1.0`: la aplicación funciona,
+pero su backend todavía está por cambiar.
+
 **La protección de rama se configura al final, después del primer pull request
 verde.** Exigir una comprobación que todavía no se ha ejecutado nunca deja el
 repositorio en un estado donde nada se puede integrar: GitHub no ofrece como
@@ -158,6 +213,13 @@ requerible una comprobación que no ha visto correr.
   Migration Plan —este cambio se aplica primero y el otro hereda el remoto ya
   creado.
 
+- **[Una release o un hotfix no se devuelve a `develop`]** → `develop` pierde
+  lo que ya está publicado y la siguiente release lo deshace. Mitigación: la
+  vuelta a `develop` es un paso numerado del flujo en el `README.md` y en las
+  tareas, no un recuerdo.
+- **[Gitflow duplica el trabajo de integración]** → Cada release y cada hotfix
+  requieren dos pull requests. Aceptado: es el costo del modelo elegido.
+
 ## Migration Plan
 
 **Orden respecto al otro cambio activo:** este cambio se aplica **antes** de
@@ -165,16 +227,12 @@ requerible una comprobación que no ha visto correr.
 rama `main`, que son prerrequisitos de las fases 7 a 9 de aquel. Aplicarlo
 después dejaría tareas duplicadas entre ambos.
 
-**Dependencia en el otro sentido, y cómo se resuelve:** tres requisitos de esta
-capacidad no se pueden satisfacer hasta que exista la automatización que el otro
-cambio crea —la aplicación solo se publica en GitHub Pages con un workflow de
-despliegue (`deploy.yml`, tarea 9.1 de aquel cambio), la reproducción local solo
-puede coincidir con un workflow que todavía no está escrito, y la protección de
-rama solo puede exigir una comprobación que nunca ha corrido. Por eso el `verify` de este cambio se escribe
-contra los pasos que el workflow **va a** tener (instalar, build, lint), y la
-verificación de coincidencia real queda como tarea de este cambio a ejecutar
-cuando el workflow exista. Está escrito así a propósito en lugar de fingir que el
-orden es limpio.
+**Dependencia en el otro sentido, y cómo se resolvió:** la versión anterior de
+este plan dejaba la publicación, la protección de rama y la coincidencia
+local-remoto esperando a los workflows de `replace-localstorage-with-api-backend`.
+Al aplicar se decidió crearlos aquí en versión mínima (ver Decisions); aquel
+cambio pasa a extenderlos —workspaces en `ci.yml`, `VITE_API_URL` y el deploy
+hook de Render en `deploy.yml`— y a ampliar la protección de rama existente.
 
 **Secuencia:**
 
@@ -183,9 +241,12 @@ orden es limpio.
 3. Crear el remoto vacío en GitHub y empujar.
 4. Agregar el script `verify` y reescribir el `README.md`, por pull request —el
    primer cambio que recorre el flujo completo es el flujo mismo.
-5. Habilitar GitHub Pages y configurar la ruta base; publicar cuando exista
-   `deploy.yml`.
+5. Habilitar GitHub Pages y configurar la ruta base; crear `ci.yml` y
+   `deploy.yml` por pull request, y publicar.
 6. Proteger `main`, una vez que hay una comprobación verde que exigir.
+7. Adoptar Gitflow: crear `develop` desde `main` y hacerla predeterminada,
+   renombrar las ramas existentes al estándar, agregar el job `nomenclatura`,
+   proteger `develop`, y publicar la primera versión con `release-0.1.0`.
 
 **Reversión:** hasta el paso 3 todo es local y se deshace borrando `.git`. A
 partir del 3 el historial es público; revertir es un commit de reversión, no un
