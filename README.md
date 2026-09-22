@@ -234,3 +234,5 @@ Se pueden habilitar reglas type-aware instalando `oxlint-tsgolint` y editando
 
 Ver la [documentación de reglas de Oxlint](https://oxc.rs/docs/guide/usage/linter/rules)
 para la lista completa de reglas y categorías.
+
+<!-- Prueba de CI (tarea 8.2): este PR se cierra sin integrar. -->
