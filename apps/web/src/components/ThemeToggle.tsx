@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Moon, Sun } from 'lucide-react'
 
 interface ThemeToggleProps {
@@ -6,6 +7,9 @@ interface ThemeToggleProps {
 }
 
 function ThemeToggle({ theme, onToggle }: ThemeToggleProps) {
+  if (theme === 'dark') {
+    useState(0)
+  }
   const isDark = theme === 'dark'
 
   return (
