@@ -122,14 +122,16 @@
 
 > Cubre la capacidad `continuous-delivery`.
 
-- [ ] 8.1 Extender `.github/workflows/ci.yml` (creado en versión mínima por `add-development-workflow`) para que instale dependencias con caché y ejecute lint y build de todos los workspaces, actualizando el script `verify` en el mismo cambio, y verificar que el archivo es YAML válido
+- [x] 8.1 Extender `.github/workflows/ci.yml` (creado en versión mínima por `add-development-workflow`) para que instale dependencias con caché y ejecute lint y build de todos los workspaces, actualizando el script `verify` en el mismo cambio, y verificar que el archivo es YAML válido
+  > Se agrega la caché de npm (`setup-node` con `cache: npm`, que guarda la descarga y no `node_modules`). El build de todos los workspaces ya lo cubría `npm run build` desde la raíz. Los pasos siguen siendo idénticos a `verify` (`npm ci && npm run build && npm run lint`), así que `verify` no necesitó cambios. YAML válido.
 - [ ] 8.2 Verificar el escenario de cambio exitoso: abrir un pull request con un cambio que pasa lint y compila, y confirmar que la ejecución se reporta exitosa en el pull request
 - [ ] 8.3 Verificar el escenario de compilación rota: abrir un pull request con un error de tipos deliberado, confirmar que la ejecución falla indicando qué comprobación falló, y revertir el error
 - [ ] 8.4 Verificar el escenario de violación de lint: abrir un pull request con una infracción deliberada de oxlint, confirmar que la ejecución falla, y revertir la infracción
 
 ## 9. Entrega continua
 
-- [ ] 9.1 Extender `.github/workflows/deploy.yml` (creado en versión mínima por `add-development-workflow`, que ya repite lint y build y publica en Pages) para que construya `apps/web` con `VITE_API_URL` apuntando al API publicado, publique el resultado en GitHub Pages, y dispare el deploy hook de Render para el API, y verificar que el archivo es YAML válido
+- [x] 9.1 Extender `.github/workflows/deploy.yml` (creado en versión mínima por `add-development-workflow`, que ya repite lint y build y publica en Pages) para que construya `apps/web` con `VITE_API_URL` apuntando al API publicado, publique el resultado en GitHub Pages, y dispare el deploy hook de Render para el API, y verificar que el archivo es YAML válido
+  > Tres jobs: `construir`, y después `publicar-web` y `desplegar-api` en paralelo. `construir` falla antes de publicar si falta la variable `API_URL`. El hook llega como secreto por variable de entorno y se llama con `curl --fail`. YAML válido, sin ninguna URL de Render escrita. Límite: el hook solo confirma que Render aceptó el pedido. Si el build de Render falla (incluida la migración), Render conserva la versión anterior, pero la ejecución de Actions no lo ve; se comprueba en los registros de Render (9.3 y 9.5).
 - [ ] 9.2 **[manual]** Registrar el deploy hook de Render y la dirección pública del API como secreto y variable del repositorio respectivamente, y verificar que ningún valor aparece en archivos versionados con `git grep` sobre las cadenas involucradas
 - [ ] 9.3 Verificar el escenario de publicación exitosa: integrar un cambio visible en la rama principal y confirmar que la web publicada y el API reflejan ese cambio sin que nadie ejecute nada manualmente
 - [ ] 9.4 Verificar el escenario de que no se publica lo que no compila: integrar un cambio que rompe la compilación, confirmar que no se publicó nada y que la versión publicada anteriormente sigue accesible, y revertir

@@ -1,7 +1,13 @@
 # Publicacion: en cada push a main repite la puerta de verificacion y, solo si
-# pasa, publica apps/web/dist/ en GitHub Pages. Repite los pasos de ci.yml a proposito:
-# un despliegue que confia en que otro workflow ya verifico es un despliegue que
-# un dia publica algo roto.
+# pasa, publica apps/web/dist/ en GitHub Pages y dispara el despliegue del API
+# en Render. Repite los pasos de ci.yml a proposito: un despliegue que confia en
+# que otro workflow ya verifico es un despliegue que un dia publica algo roto.
+#
+# Configuracion del repositorio (Settings > Secrets and variables > Actions):
+# - variable API_URL: direccion publica del API. No es secreta; queda escrita
+#   en el JavaScript de la web.
+# - secreto RENDER_DEPLOY_HOOK_URL: la URL del deploy hook de Render. Quien la
+#   tiene puede redesplegar el API, por eso es secreta.
 name: deploy
 
 on:
@@ -22,12 +28,25 @@ concurrency:
 jobs:
   construir:
     runs-on: ubuntu-latest
+    env:
+      VITE_API_URL: ${{ vars.API_URL }}
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+
+      # Sin API_URL la web se construiria sin saber donde esta el API y
+      # mostraria un error de carga a todo el que la abra. Mejor no publicar.
+      - name: Comprobar la configuracion
+        run: |
+          if [ -z "$VITE_API_URL" ]; then
+            echo "::error::Falta la variable API_URL del repositorio (Settings > Secrets and variables > Actions > Variables)."
+            exit 1
+          fi
+          echo "La web apuntara a: $VITE_API_URL"
 
       - name: Instalar dependencias
         run: npm ci
@@ -42,7 +61,7 @@ jobs:
         with:
           path: apps/web/dist
 
-  publicar:
+  publicar-web:
     needs: construir
     runs-on: ubuntu-latest
     environment:
@@ -51,3 +70,21 @@ jobs:
     steps:
       - id: despliegue
         uses: actions/deploy-pages@v4
+
+  # Render construye el API desde main y aplica las migraciones al final de su
+  # comando de build; si algo falla, sigue sirviendo la version anterior. Su
+  # auto-deploy esta apagado: este hook es el unico disparador.
+  desplegar-api:
+    needs: construir
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar el deploy hook de Render
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "::error::Falta el secreto RENDER_DEPLOY_HOOK_URL del repositorio."
+            exit 1
+          fi
+          curl --fail --silent --show-error --output /dev/null --request POST "$HOOK"
+          echo "Despliegue del API solicitado a Render."

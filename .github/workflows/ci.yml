@@ -20,13 +20,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # La cache guarda la descarga de paquetes, no node_modules: npm ci sigue
+      # instalando limpio desde el lock, igual que `npm run verify`.
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
       - name: Instalar dependencias
         run: npm ci
 
+      # Todos los workspaces: web, API (genera el cliente de Prisma) y shared.
       - name: Construir
         run: npm run build
 
