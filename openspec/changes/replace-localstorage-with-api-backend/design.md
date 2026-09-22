@@ -192,6 +192,13 @@ evento `deployment_status`: sólo con `success` en el entorno de producción
 construye y verifica la web de ese mismo commit y la publica en Pages. Si el
 despliegue del API falla —incluida la migración o el chequeo de salud—, Railway
 no informa `success`, el workflow no corre y la web anterior sigue publicada.
+*Al aplicar (hotfix 0.3.4):* publicar directamente desde el evento
+`deployment_status` falló con un 500 de la API de Pages en cada intento, sin
+incidente de GitHub. Por eso el job que recibe el aviso sólo relanza el mismo
+workflow sobre `main` con `workflow_dispatch` —uno de los pocos eventos que el
+token del propio workflow puede disparar—, y esa ejecución comprueba que el
+commit pertenezca a `main`, construye y publica, igual que las publicaciones
+que siempre funcionaron.
 Se descartó publicar la web desde el mismo workflow que Railway espera: Railway
 aguarda a que termine todo el CI del commit, y la web habría salido antes que el
 API. También se descartó desplegar con el CLI de Railway (`railway up`), que
